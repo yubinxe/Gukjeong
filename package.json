@@ -2,7 +2,15 @@
   "name": "gukjeong-outlook",
   "private": true,
   "type": "module",
-  "description": "국정 한눈에 3.0 전망 인텔리전스 모듈 — 기존 사이트에 증분 결합",
-  "scripts": { "test": "node --test test/*.test.mjs" },
-  "engines": { "node": ">=20.10" }
+  "description": "국정 한눈에 3.0 증분 모듈 — 전망 인텔리전스 · 오늘의 브리핑(요약·해석·대화). 기존 사이트에 결합",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "dev": "node scripts/dev.mjs"
+  },
+  "engines": {
+    "node": ">=20.10"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0"
+  }
 }

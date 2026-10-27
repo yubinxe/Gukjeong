@@ -53,6 +53,54 @@ test/outlook.test.mjs              10개 테스트
 ## 로컬 실행
 
 ```
+npm install
 npm test
-python3 -m http.server 8800   # http://localhost:8800/outlook/  (API 없이 정적 JSON 으로 동작)
+npm run dev                   # http://localhost:8800/briefing/ · /outlook/  (없는 경로는 운영 사이트로 넘김)
+DEV_FAKE_AI=1 npm run dev     # API 키 없이 AI 화면 상태 점검(가짜 해석·가짜 답, 화면 검수 전용)
 ```
+
+---
+
+# 오늘의 브리핑 (2026-10-27)
+
+`/briefing/` — 그날의 사안·시세·입법예고·해외 보도를 한 지면에 정리하고, AI 해석과 질의응답을 더한 화면. 위쪽 탭 줄·아래 탭 막대·전체 메뉴에서 들어간다.
+
+재확인(2026-10-27): 운영 화면·정적 자산(`index.html`·`assets/app.js`·`assets/style.css`)·공개 API(`/api/dashboard` 등)는 이제 이 환경에서 읽힌다. 서버 함수 소스는 여전히 볼 수 없어, 브리핑은 **운영 `/api/dashboard` 출력(이미 수집·묶음·집계된 결과)을 원천으로** 삼는다. 새 수집을 일으키지 않는다.
+
+```
+briefing/
+  index.html · briefing.css · briefing.js   채널(소식 흐름) + 브리핑 도우미(대화) — 사이트 style.css 토큰 위에 얹음
+  lib/compose.mjs                           사실 층 조립 · 모델 입력(digest) · 수치 근거 검사 · 해석 정리 · 소식 찾기 (브라우저/Node 공용, 의존성 0)
+api/briefing/
+  today.mjs     GET  오늘의 브리핑(사실 + 해석), ?facts=1 은 사실만
+  chat.mjs      POST 대화 → text/event-stream (meta · delta · done · error)
+  _lib.mjs      원천 로딩·메모, Claude 호출, 프롬프트, 대화 정리, 요청 제한 (밑줄 파일 → 함수로 노출 안 됨)
+scripts/integrate-briefing.mjs   운영 index.html·app.js 에 진입점 3곳을 넣는 패치(멱등)
+scripts/dev.mjs                  로컬 서버
+test/briefing.test.mjs · briefing-sdk.test.mjs   22개(사실 층·수치 검사·메모·API·SSE·SDK 실제 직렬화·통합 패치)
+```
+
+## 화면
+
+- 채널(텔레그램 채널 문법): 채널 머리(판·기준 시각·기사 수) → 고정 메시지(오늘의 한 문장) → 날짜 알약 → 글. 글마다 원문 링크, 보도 흐름(첫 보도→후속), 언론사 수, `묻기`(텔레그램 답장처럼 인용해 질문), `공유`(iOS 공유 시트).
+- 순서: 오늘의 한 문장·3줄 → 시세(20거래일 선) → 지금 확산 중 → 오늘의 연결 → 이어지는 사안 → 입법예고·세계가 본 한국·거시 지표.
+- 브리핑 도우미(iOS 문법): 넓은 화면은 오른쪽 고정 창, 휴대폰은 아래에서 올라오는 시트(뒤로 가기·아래로 끌어 닫기, 화상 키보드 높이 추적). 답은 글자 단위로 흐르고, 근거 소식은 `S3` 칩 → 누르면 해당 글로 이동. 멈춤·새 대화·추천 질문. 대화는 그날 탭 안에서만 보관(sessionStorage).
+- `듣기`: 기기 내 음성 합성(ko-KR)으로 오늘의 브리핑 낭독.
+- 해석이 2.5초 안에 오지 않으면 사실 층부터 그리고, 도착하면 채운다. 브리핑 함수가 없는 배포에서는 `/api/dashboard`로 직접 사실 층을 만든다.
+
+## AI 원칙(코드로 강제)
+
+- 모델: `claude-opus-5-5`(Claude API, 공식 SDK). 해석은 effort `medium` + 구조화 출력(JSON 스키마, S번호 열거), 대화는 effort `low` + 스트리밍. 둘 다 서버측 대체 모델(`fallbacks: "default"`, `server-side-fallback-2026-07-01`)을 켜 두어 안전 분류기 거절 시 같은 호출 안에서 다른 모델이 이어받는다.
+- 수치: 해석·답에 나온 숫자를 모델에 준 자료와 대조. 해석은 근거 없는 수치가 든 문장을 **싣지 않고** 개수를 공개, 대화는 답 아래에 "확인되지 않은 수치"로 표시.
+- 사실/해석 분리: 해석 문장에는 모두 `해석 · AI` 표지. 정당·인물 평가, 매수·매도 권유 금지(프롬프트). 기사 문장은 자료이지 지시가 아님(프롬프트 주입 방어).
+- 비용 상한: 해석은 판(새벽·아침·오후·저녁)이 바뀌거나 TTL(30분)이 지나고 상위 6개 사안 구성이 달라졌을 때만 새로 씀(인스턴스 메모 + CDN `s-maxage=600, stale-while-revalidate=3600`). 대화는 오늘의 자료 블록에 프롬프트 캐시 지점, 질문 1,200자·대화 9,000자·`max_tokens` 8,000, IP당 5분 10회.
+- 원천 주소는 요청 Host 헤더로 만들지 않음(위조 Host 로 다른 서버의 글을 모델에 먹이는 것 차단). 대화 API 는 같은 출처 요청만.
+
+## 운영에 붙이는 방법 (PC에서)
+
+1. 운영 소스 폴더에 `briefing/`, `api/briefing/`을 복사하고 `package.json` 에 `"@anthropic-ai/sdk": "^1.3.0"` 의존성을 더한다(운영에서 첫 외부 라이브러리 — 서버 함수에서만 쓰고 화면에는 실리지 않음).
+2. `node scripts/integrate-briefing.mjs <운영 소스 폴더> --dry` 로 확인 → 옵션 없이 다시 실행해 적용.
+   위쪽 탭 줄·전체 메뉴에 '오늘의 브리핑'을 넣고, 아래 탭 막대는 iOS 권장 다섯 칸을 지키려고 '거시경제' 칸을 '브리핑'으로 바꾼다(거시경제는 위쪽 탭 줄·더보기에 그대로). 원래대로 여섯 칸을 원하면 탭 막대 부분만 되돌리고 `style.css`의 `repeat(5, 1fr)`을 6으로.
+3. Vercel 환경 변수: `ANTHROPIC_API_KEY`(필수, 없으면 AI 없이 사실 층 + 소식 찾기로 동작). 선택: `BRIEFING_MODEL`, `BRIEFING_EFFORT`, `BRIEFING_CHAT_EFFORT`, `BRIEFING_INSIGHT_TTL_MIN`, `BRIEFING_CHAT_LIMIT`, `BRIEFING_SOURCE_URL`, `BRIEFING_AI=off`(즉시 끄기).
+4. 권장: Vercel Firewall 에 `/api/briefing/chat` 요청 제한 규칙, Anthropic 콘솔 작업공간 지출 한도. 해석 생성은 수십 초 걸릴 수 있으니 함수 최대 실행 시간이 60초 이상인지 확인.
+5. `npm test` → Preview 배포로 확인 → 승인 후 프로덕션.

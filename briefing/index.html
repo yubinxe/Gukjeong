@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>오늘의 브리핑 — 국정 한눈에</title>
+<meta name="description" content="오늘 언론이 가장 많이 다룬 사안과 시세·입법예고를 한 화면에 정리하고, 해석과 질의응답을 더한 국정 한눈에 브리핑.">
+<meta property="og:title" content="오늘의 브리핑 — 국정 한눈에">
+<meta property="og:description" content="오늘의 사안과 시장을 한 번에, 묻고 답하며 읽는 브리핑.">
+<meta property="og:locale" content="ko_KR">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#18301f">
+<link rel="canonical" href="https://gukjeong-hannune.vercel.app/briefing/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="briefing.css?v=1">
+<script>
+  try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
+<script type="module" src="briefing.js?v=1"></script>
+</head>
+<body class="bf-page">
+<a class="skip" href="#bf-main">본문 바로가기</a>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <h1><a href="/" class="home-link" title="처음 화면으로">국정 한눈에</a></h1>
+      <span class="brand-sub">오늘의 브리핑 · 보도와 시세를 읽고 묻는 곳</span>
+    </div>
+    <button type="button" class="theme-btn" id="themeBtn" aria-label="화면 테마 전환">어둡게</button>
+  </div>
+</header>
+
+<nav class="views" aria-label="보기 선택">
+  <div class="views-in" role="tablist">
+    <a href="/" role="tab" aria-selected="false">종합 상황판</a>
+    <a href="/briefing/" role="tab" aria-selected="true">오늘의 브리핑</a>
+    <a href="/?v=policy" role="tab" aria-selected="false">입법·정책</a>
+    <a href="/?v=macro" role="tab" aria-selected="false">거시경제 읽기</a>
+    <a href="/?v=street" role="tab" aria-selected="false">시장 분석</a>
+    <a href="/?v=world" role="tab" aria-selected="false">세계가 본 한국</a>
+    <a href="/?v=compare" role="tab" aria-selected="false">국내외 보도 비교</a>
+    <a href="/?v=sources" role="tab" aria-selected="false">출처 분석</a>
+    <a href="/?v=realty" role="tab" aria-selected="false">부동산 동향</a>
+  </div>
+</nav>
+
+<main id="bf-main" class="bf">
+  <section class="bf-channel" aria-labelledby="bf-title">
+    <header class="bf-head">
+      <span class="bf-av" aria-hidden="true"></span>
+      <div class="bf-head-t">
+        <p class="bf-kicker" id="bfEdition">오늘의 브리핑</p>
+        <h2 id="bf-title" class="bf-date">불러오는 중</h2>
+        <p class="bf-meta" id="bfMeta">보도와 시세를 모으는 중입니다</p>
+      </div>
+      <div class="bf-head-act">
+        <button type="button" class="bf-tool" id="listenBtn" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 8v4h3l4 3V5L7 8z"/><path d="M14 7.5a3.5 3.5 0 0 1 0 5"/></svg><span>듣기</span></button>
+        <button type="button" class="bf-tool" id="shareBtn"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10"/><path d="M6.5 6.5 10 3l3.5 3.5"/><path d="M5 10v6h10v-6"/></svg><span>공유</span></button>
+      </div>
+    </header>
+    <a class="bf-pin" id="bfPin" href="#lead" hidden><span class="bf-pin-k">고정</span><span class="bf-pin-t" id="bfPinText"></span></a>
+    <div class="bf-feed" id="feed" aria-busy="true">
+      <div class="bf-skel" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <aside class="bf-chat" id="chat" aria-labelledby="chatTitle">
+    <header class="bf-chat-h">
+      <span class="bf-grip" aria-hidden="true"></span>
+      <span class="bf-av sm" aria-hidden="true"></span>
+      <div class="bf-chat-id"><b id="chatTitle">브리핑 도우미</b><span id="chatStatus">오늘 자료 기준으로 답합니다</span></div>
+      <button type="button" class="bf-tool" id="chatNew" title="대화를 비우고 새로 시작">새 대화</button>
+      <button type="button" class="bf-tool bf-close" id="chatClose">닫기</button>
+    </header>
+    <div class="bf-log" id="chatLog" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="bf-sugg" id="chatSugg" aria-label="추천 질문"></div>
+    <form class="bf-compose" id="chatForm">
+      <div class="bf-quote" id="chatQuote" hidden><span class="bf-quote-k">이 소식에 대해</span><span class="bf-quote-t" id="chatQuoteText"></span><button type="button" id="chatQuoteX" aria-label="인용 취소">×</button></div>
+      <div class="bf-field">
+        <label for="chatInput" class="visually-hidden">질문</label>
+        <textarea id="chatInput" rows="1" maxlength="1200" placeholder="오늘 소식에 대해 물어보세요" autocomplete="off"></textarea>
+        <button type="submit" class="bf-send" id="chatSend" aria-label="보내기" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5"/><path d="M5.5 9.5 10 5l4.5 4.5"/></svg></button>
+      </div>
+    </form>
+    <p class="bf-chat-note">오늘 수집된 보도·시세를 근거로 답하며 틀릴 수 있습니다. 해석은 확인된 사실이 아니며 투자 판단용이 아닙니다.</p>
+  </aside>
+</main>
+
+<button type="button" class="bf-ask" id="askBar" aria-controls="chat"><span>브리핑 도우미에게 묻기</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15V5"/><path d="M5.5 9.5 10 5l4.5 4.5"/></svg></button>
+
+<footer class="foot">
+  <p>오늘의 브리핑은 국정 한눈에가 수집·묶음한 보도(제목·출처·시각·요지 첫 문장)와 시세, 입법예고, 한국은행 공개 자료로 만듭니다. 원문은 각 언론사로 연결하며 저작권과 책임은 각 언론사에 있습니다.</p>
+  <p>‘해석’ 표시가 붙은 문장은 AI(Claude)가 같은 자료를 읽고 쓴 것으로, 확인된 사실이 아닙니다. 해석 속 수치는 수집 자료에 있는 것만 통과시키고, 근거가 없는 문장은 싣지 않습니다. 정당·인물 평가와 투자 권유는 하지 않습니다.</p>
+  <p class="maker">기획·개발 <a href="https://yubinxe.github.io/Portfolio/" target="_blank" rel="author noopener">김유빈 Yubin Kim · 포트폴리오 ↗</a></p>
+</footer>
+
+<nav class="tabbar" aria-label="주요 화면">
+  <a href="/"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="4"/><rect x="13" y="10" width="7" height="10"/><rect x="4" y="13" width="7" height="7"/></svg><span>종합</span></a>
+  <a href="/briefing/" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H10l-4 3.5V16H4z"/><path d="M8 9h8M8 12.5h5"/></svg><span>브리핑</span></a>
+  <a href="/?v=street"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M5 15l4-4 3 3 6-7"/><path d="M14 7h4v4"/></svg><span>시장</span></a>
+  <a href="/?v=realty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg><span>부동산</span></a>
+  <button type="button" id="moreBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>더보기</span></button>
+</nav>
+
+<dialog id="moreSheet" class="sheet" aria-labelledby="moreTitle">
+  <div class="sh-in">
+    <span class="sh-grip" aria-hidden="true"></span>
+    <header class="sh-h"><h2 id="moreTitle">전체 메뉴</h2><button type="button" class="sh-x" data-close-sheet aria-label="닫기">닫기</button></header>
+    <ol class="sh-list">
+      <li><a href="/"><b>종합 상황판</b><span>오늘 가장 많이 다룬 사안 · 시장 · 신호</span></a></li>
+      <li><a href="/briefing/" aria-current="page"><b>오늘의 브리핑</b><span>요약 · 해석 · 묻고 답하기</span></a></li>
+      <li><a href="/?v=street"><b>시장 분석</b><span>미국장·한국장 · 우량주 · 분봉 차트</span></a></li>
+      <li><a href="/?v=realty"><b>부동산 동향</b><span>가격 · 미분양 · 금리 · 주간 보도</span></a></li>
+      <li><a href="/?v=macro"><b>거시경제 읽기</b><span>한국은행 지표 · 이슈노트</span></a></li>
+      <li><a href="/?v=policy"><b>입법·정책</b><span>입법예고 · 국회 일정 · 보도자료</span></a></li>
+      <li><a href="/?v=world"><b>세계가 본 한국</b><span>해외 언론 보도</span></a></li>
+      <li><a href="/?v=compare"><b>국내외 보도 비교</b><span>같은 사안, 국내와 해외의 차이</span></a></li>
+      <li><a href="/?v=sources"><b>출처 분석</b><span>매체 분포 · 통신사 의존도</span></a></li>
+    </ol>
+    <div class="sh-tools">
+      <button type="button" id="sheetRefresh">지금 갱신</button>
+      <button type="button" id="sheetTheme">화면 밝기 전환</button>
+    </div>
+  </div>
+</dialog>
+</body>
+</html>
