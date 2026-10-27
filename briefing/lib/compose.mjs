@@ -178,15 +178,17 @@ export function citedIds(text, b) {
   return [...new Set([...String(text || "").matchAll(/\[(S\d{1,2})\]/g)].map((m) => m[1]))].filter((id) => ids.has(id));
 }
 
-// AI 없이도 동작하는 소식 찾기 — 질문 낱말이 제목·요지·다른 제목에 얼마나 겹치는지
+// AI 없이도 동작하는 소식 찾기 — 질문 낱말이 제목·요지·다른 제목에 얼마나 겹치는지.
+// '오늘·소식·가지' 같은 질문 말투는 빼고, 본문에만 한 번 스친 낱말로는 고르지 않는다(제목 일치 3점, 본문 1점, 2점 이상).
+const STOP = new Set(["오늘", "소식", "뉴스", "알아야", "가지", "무엇", "뭐야", "어떤", "어떻게", "정리", "중요", "중요한", "알려", "궁금", "관련", "대해", "요즘", "지금", "가장", "주요"]);
 export function searchStories(b, q, k = 3) {
   const words = [...new Set(String(q || "").toLowerCase().match(/[0-9a-z가-힣]{2,}/g) || [])]
-    .map((w) => w.replace(/(은|는|이|가|을|를|의|에|에서|로|으로|와|과|도|만|요|까|나요|해줘|해 줘|알려줘)$/, ""))
-    .filter((w) => w.length >= 2);
+    .map((w) => w.replace(/(은|는|이|가|을|를|의|에|에서|로|으로|와|과|도|만|요|까|나요|해줘|알려줘)$/, ""))
+    .filter((w) => w.length >= 2 && !STOP.has(w));
   if (!words.length) return [];
   return b.stories.map((s) => {
     const hay = `${s.title} ${s.summary} ${s.section} ${s.timeline.map((t) => t.h).join(" ")}`.toLowerCase();
     const score = words.reduce((a, w) => a + (hay.includes(w) ? (s.title.toLowerCase().includes(w) ? 3 : 1) : 0), 0);
-    return { id: s.id, score: score ? score + s.outlets / 100 : 0 };
+    return { id: s.id, score: score >= 2 ? score + s.outlets / 100 : 0 };
   }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score).slice(0, k).map((x) => x.id);
 }

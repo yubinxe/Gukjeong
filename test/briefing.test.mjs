@@ -72,6 +72,7 @@ test("인용 번호 · 소식 찾기", () => {
   const kospi = b.stories.find((s) => /코스피/.test(s.title)).id;
   assert.equal(searchStories(b, "코스피가 왜 올랐어?")[0], kospi);
   assert.deepEqual(searchStories(b, "?!"), []);
+  assert.deepEqual(searchStories(b, "오늘 꼭 알아야 할 소식 세 가지는?"), [], "질문 말투만으로는 고르지 않는다");
 });
 
 test("해석은 기사 링크에 묶여 순위가 바뀌어도 맞는 소식에 붙는다", () => {
@@ -205,6 +206,15 @@ test("대화 API: AI 꺼짐이면 오늘 소식 찾기로 답한다", async () =
   assert.equal(ev[0].data.stories.length, 12);
   assert.match(ev[1].data.t, /AI 답변이 꺼져/);
   assert.ok(ev[2].data.cited.length >= 1);
+  const generic = events(await call(h, req({ messages: [{ role: "user", content: "오늘 꼭 알아야 할 소식 세 가지는?" }] })));
+  assert.deepEqual(generic.find((e) => e.ev === "done").data.cited, ["S1", "S2", "S3"], "맞는 소식이 없으면 오늘 가장 많이 다룬 소식");
+  const text = async (q) => events(await call(h, req({ messages: [{ role: "user", content: q }] }))).filter((e) => e.ev === "delta").map((e) => e.data.t).join("");
+  assert.match(await text("입법예고 중 생활에 닿는 건 뭔가요?"), new RegExp(b.policy.govPre[0].title.slice(0, 10)));
+  assert.match(await text("해외 언론은 한국의 무엇을 다뤘나요?"), new RegExp(b.world[0].outlet));
+  assert.match(await text("오늘 시장은 왜 이렇게 움직였나요?"), /코스피 5,6\d\d/);
+  const s5 = b.stories[4];
+  const q = events(await call(h, req({ messages: [{ role: "user", content: "이건 무슨 일이야?" }], quote: { link: s5.link, title: s5.title } })));
+  assert.equal(q.find((e) => e.ev === "done").data.cited[0], "S5", "인용한 소식을 먼저");
 });
 
 function streamingClaude(text, final = { stop_reason: "end_turn" }, seen = []) {

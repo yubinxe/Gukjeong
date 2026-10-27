@@ -7,11 +7,29 @@
 import { citedIds, digestText, numberSet, searchStories, ungrounded } from "../../briefing/lib/compose.mjs";
 import { CHAT_SYSTEM, FALLBACK_BETA, clientIp, config, getBriefing, getClaude, normalizeMessages, rateLimit, readJson, sameOrigin } from "./_lib.mjs";
 
-function fallbackAnswer(b, question) {
-  const ids = searchStories(b, question);
-  if (!ids.length) return "지금은 AI 답변이 꺼져 있어 오늘 수집된 소식에서만 찾아봤습니다. 질문과 맞는 소식을 찾지 못했습니다. 다른 낱말로 물어봐 주세요.";
+// AI 가 꺼져 있을 때: 질문 갈래(입법예고·해외·시장)는 그 자료를 그대로 보여 주고, 나머지는 소식 찾기 → 없으면 상위 소식.
+function fallbackAnswer(b, question, quoted = null) {
+  const OFF = "지금은 AI 답변이 꺼져 있어";
+  const pct = (v) => `${v > 0 ? "+" : ""}${v}%`;
+  if (/입법|법안|법령|예고/.test(question) && (b.policy.govPre.length || b.policy.assemblyPre.length)) {
+    return `${OFF} 입법예고 목록을 그대로 보여 드립니다(입법예고 목록 기준).\n${[
+      ...b.policy.govPre.map((p) => `- ${p.title} · ${p.dept} · ${p.daysLeft}일 남음`),
+      ...b.policy.assemblyPre.map((p) => `- ${p.title} · 국회 ${p.committee}`),
+    ].join("\n")}`;
+  }
+  if (/해외|외신|세계/.test(question) && b.world.length) {
+    return `${OFF} 해외 언론의 최근 보도 제목을 보여 드립니다(제목은 자동 번역).\n${b.world.map((w) => `- ${w.outlet}(${w.country}): ${w.title}`).join("\n")}`;
+  }
+  const found = quoted ? [quoted.id, ...searchStories(b, question).filter((id) => id !== quoted.id)].slice(0, 3) : searchStories(b, question);
   const by = Object.fromEntries(b.stories.map((s) => [s.id, s]));
-  return `지금은 AI 답변이 꺼져 있어 오늘 수집된 소식에서 찾은 결과만 보여 드립니다.\n${ids.map((id) => `- ${by[id].title} (언론 ${by[id].outlets}곳) [${id}]`).join("\n")}`;
+  const list = (ids) => ids.map((id) => `- ${by[id].title} (언론 ${by[id].outlets}곳) [${id}]`).join("\n");
+  if (/시장|시세|코스피|코스닥|환율|증시|주가|지수/.test(question) && b.markets.length) {
+    const ids = found.length ? found : searchStories(b, "코스피 환율 증시");
+    return `${OFF} 시세와 관련 보도만 보여 드립니다(시세 기준, 투자 판단용 아님).\n${b.markets.slice(0, 6).map((m) => `${m.name} ${m.price.toLocaleString("en-US")} (${pct(m.changePct)})`).join(" · ")}${ids.length ? `\n${list(ids)}` : ""}`;
+  }
+  const ids = found.length ? found : b.stories.slice(0, 3).map((s) => s.id);
+  if (!ids.length) return `${OFF} 오늘 묶인 소식도 아직 없습니다. 잠시 뒤 다시 물어봐 주세요.`;
+  return `${found.length ? `${OFF} 오늘 수집된 소식에서 찾은 결과만 보여 드립니다.` : `${OFF} 질문에 맞춰 답하지 못합니다. 대신 오늘 언론이 가장 많이 다룬 소식입니다.`}\n${list(ids)}`;
 }
 
 export function createHandler({ briefing = getBriefing, claude = getClaude, cfg = config() } = {}) {
@@ -30,11 +48,10 @@ export function createHandler({ briefing = getBriefing, claude = getClaude, cfg 
 
     const messages = norm.messages;
     const last = messages[messages.length - 1];
+    const asked = last.content;
     const q = body?.quote && typeof body.quote === "object" ? body.quote : null;
-    if (q) {
-      const s = b.stories.find((x) => x.link === q.link);
-      last.content = `(인용한 소식: ${s ? `[${s.id}] ${s.title}` : String(q.title || "").slice(0, 120)})\n${last.content}`;
-    }
+    const quoted = q ? b.stories.find((x) => x.link === q.link) || null : null;
+    if (q) last.content = `(인용한 소식: ${quoted ? `[${quoted.id}] ${quoted.title}` : String(q.title || "").slice(0, 120)})\n${last.content}`;
 
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
@@ -45,7 +62,7 @@ export function createHandler({ briefing = getBriefing, claude = getClaude, cfg 
     send("meta", { basis: b.basis, ai: cfg.ai, stories: b.stories.map((s) => ({ id: s.id, link: s.link, title: s.title })) });
 
     if (!cfg.ai) {
-      const text = fallbackAnswer(b, last.content);
+      const text = fallbackAnswer(b, asked, quoted);
       send("delta", { t: text });
       send("done", { cited: citedIds(text, b), unverified: [], stop: "fallback" });
       return res.end();
