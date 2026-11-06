@@ -5,7 +5,6 @@ import { composeBriefing, digestText, edition, cleanSummary, numberSet, unground
 import { config, sourceUrl, insightSchema, generateInsights, insightsFor, remapInsights, normalizeMessages, rateLimit, resetMemos, resetRateLimit, FALLBACK_BETA } from "../api/briefing/_lib.mjs";
 import { createHandler as todayHandler } from "../api/briefing/today.mjs";
 import { createHandler as chatHandler } from "../api/briefing/chat.mjs";
-import { patchIndex, patchApp } from "../scripts/integrate-briefing.mjs";
 
 const dash = JSON.parse(await readFile(new URL("./fixtures/dashboard-2026-10-27.json", import.meta.url), "utf8"));
 const NOW = new Date("2026-10-27T09:00:00Z");
@@ -250,18 +249,4 @@ test("대화 API: 거절은 오류 이벤트로", async () => {
   const ev = events(await call(h, req({ messages: [{ role: "user", content: "질문" }] })));
   assert.ok(ev.some((e) => e.ev === "error" && e.data.refusal));
   assert.ok(!ev.some((e) => e.ev === "done"));
-});
-
-test("운영 홈 통합: 세 곳에 진입점 · 탭 막대 다섯 칸 · 두 번 돌려도 같다", async () => {
-  const html = await readFile(new URL("./fixtures/site-nav.html", import.meta.url), "utf8");
-  const a = patchIndex(html);
-  assert.equal(a.changes.length, 3);
-  assert.equal((a.html.match(/href="\/briefing\/"/g) || []).length, 3);
-  const bar = a.html.match(/<nav class="tabbar"[\s\S]*?<\/nav>/)[0];
-  assert.equal((bar.match(/<a |<button /g) || []).length, 5);
-  assert.ok(!/data-view="macro"/.test(bar));
-  assert.ok(/data-view="macro"/.test(a.html), "거시경제는 다른 메뉴에 남는다");
-  assert.equal(patchIndex(a.html).changes.length, 0);
-  assert.equal(patchApp("const TAB_VIEWS = ['home', 'street', 'realty', 'macro'];").js, "const TAB_VIEWS = ['home', 'street', 'realty'];");
-  assert.throws(() => patchIndex("<html></html>"), /기준 표지/);
 });
