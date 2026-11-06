@@ -1,0 +1,51 @@
+{
+ "schema": 1,
+ "synthetic": false,
+ "status": "collecting",
+ "generatedAt": "2026-11-06T00:00:00.000Z",
+ "regions": "통계청 센서스용 행정구역경계 2018, 현재 시도 소속으로 재집계",
+ "snapshots": [],
+ "planned": [
+  {
+   "kind": "최초",
+   "term": 22,
+   "published": "2024-08-29",
+   "basis": "2024-05-30",
+   "title": "국회공직자윤리위원회 공고 — 제22대 국회의원 최초 재산등록사항"
+  },
+  {
+   "kind": "정기",
+   "term": 22,
+   "published": "2025-03-27",
+   "basis": "2024-12-31",
+   "title": "국회공직자윤리위원회 공고 — 2025년 정기 재산변동사항"
+  },
+  {
+   "kind": "정기",
+   "term": 22,
+   "published": "2026-03-26",
+   "basis": "2025-12-31",
+   "title": "국회공직자윤리위원회 공고 — 2026년 정기 재산변동사항"
+  }
+ ],
+ "registry": {
+  "source": "위키데이터(Wikidata) SPARQL",
+  "license": "CC0 1.0",
+  "url": "https://www.wikidata.org/wiki/Q14850694",
+  "fetchedAt": "2026-11-06T12:01:33.427Z",
+  "coverage": {
+   "20": {
+    "roster": 320,
+    "withParty": 4
+   },
+   "21": {
+    "roster": 320,
+    "withParty": 5
+   },
+   "22": {
+    "roster": 298,
+    "withParty": 2
+   }
+  }
+ }
+}

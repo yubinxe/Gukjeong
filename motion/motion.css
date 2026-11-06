@@ -1,0 +1,85 @@
+/* 국정 한눈에 · 모션 계층 — 기존 화면의 배치·색·글꼴은 그대로 두고, 등장·반응·변화의 질만 다듬는다.
+   원칙: 데이터가 실제로 바뀔 때만 움직인다 · transform/opacity 우선 · 줄인 움직임 설정이면 즉시 최종 상태. */
+
+:root {
+  /* 시간: 손에 닿는 반응은 짧게, 데이터의 서사는 길게 */
+  --mo-micro: 140ms;     /* 단추·아이콘·초점 */
+  --mo-nav: 240ms;       /* 탭·메뉴·활성 표시 */
+  --mo-reveal: 420ms;    /* 패널·차트 등장 */
+  --mo-content: 520ms;   /* 화면·필터 전환 */
+  --mo-map: 720ms;       /* 지도 카메라 */
+  --mo-data: 900ms;      /* 숫자·순위·분포 전환 */
+  /* 가속: 직접 조작은 민첩하게, 이동은 감속, 요소 재배치는 과하지 않은 스프링 */
+  --mo-ease-out: cubic-bezier(.2, .7, .2, 1);
+  --mo-ease-in: cubic-bezier(.4, 0, 1, 1);
+  --mo-ease-in-out: cubic-bezier(.65, 0, .35, 1);
+  --mo-ease-spring: cubic-bezier(.3, 1.12, .55, 1); /* 넘침 약 3% — 튀는 바운스는 쓰지 않는다 */
+}
+
+/* ── 위쪽 탭 줄: 글자 폭에 맞춰 미끄러지는 활성 표시 + 옅은 마우스 표시 ── */
+.views-in.mo-on { position: relative; }
+.views-in.mo-on a[aria-selected="true"] { border-bottom-color: transparent; }
+.mo-ind, .mo-hov { position: absolute; left: 0; bottom: 0; width: 100px; height: 2px; transform-origin: 0 0; pointer-events: none; }
+.mo-ind { background: var(--brass); transition: transform var(--mo-nav) var(--mo-ease-out); }
+.mo-hov { background: color-mix(in srgb, var(--brass) 38%, transparent); opacity: 0; transition: transform var(--mo-nav) var(--mo-ease-out), opacity var(--mo-micro) ease; }
+.mo-hov.on { opacity: 1; }
+.mo-ind.mo-jump, .mo-hov.mo-jump { transition: none; }
+.views a { transition: color var(--mo-micro) ease; }
+
+/* ── 아래 탭 막대: 활성 칸의 윗선이 칸 사이를 옮겨 간다 ── */
+.tabbar.mo-on [aria-current="page"]::before, .tabbar.mo-on button[data-on]::before { opacity: 0; }
+.mo-tab-ind { position: absolute; top: 0; left: 0; width: 100px; height: 2px; background: #c9b27e; transform-origin: 0 0; pointer-events: none; transition: transform var(--mo-nav) var(--mo-ease-out), opacity var(--mo-micro); }
+.mo-tab-ind.mo-jump { transition: none; }
+
+/* ── 머리 막대: 아래로 읽어 내려가면 이름 막대만 접고, 위로 돌아오면 다시 편다(높이는 바꾸지 않아 내용이 튀지 않는다) ── */
+.bar.mo-sticky { transition: transform var(--mo-nav) var(--mo-ease-out); will-change: transform; }
+.views.mo-sticky { transition: transform var(--mo-nav) var(--mo-ease-out), box-shadow var(--mo-nav) ease; }
+.mo-compact .bar.mo-sticky { transform: translateY(-100%); }
+.mo-compact .views.mo-sticky { transform: translateY(calc(-1 * var(--bar-h, 56px))); box-shadow: 0 6px 16px -14px rgba(10, 16, 12, .55); }
+
+/* ── 화면 전환: 머리·탭 줄·탭 막대는 고정, 본문만 짧게 떠오른다 ── */
+header.bar { view-transition-name: mo-bar; }
+nav.views { view-transition-name: mo-views; }
+nav.tabbar { view-transition-name: mo-tabbar; }
+::view-transition-group(mo-bar), ::view-transition-group(mo-views), ::view-transition-group(mo-tabbar),
+::view-transition-old(mo-bar), ::view-transition-new(mo-bar), ::view-transition-old(mo-views), ::view-transition-new(mo-views),
+::view-transition-old(mo-tabbar), ::view-transition-new(mo-tabbar) { animation: none; }
+::view-transition-old(root) { animation: mo-vt-out 150ms var(--mo-ease-in) both; }
+::view-transition-new(root) { animation: mo-vt-in 360ms var(--mo-ease-out) both; }
+@keyframes mo-vt-out { to { opacity: 0; } }
+@keyframes mo-vt-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* ── 순위·목록 재배치: 오른 행은 놋쇠, 내린 행은 옅은 선으로 잠깐 표시 ── */
+.mo-rise { animation: mo-rise 1.6s var(--mo-ease-out); }
+.mo-fall { animation: mo-fall 1.6s var(--mo-ease-out); }
+#top .track i, #keywords .bar i, #volume .track i, #storyBars .sb { transform-origin: 0 50%; }
+.mo-moving { position: relative; background: var(--panel); }
+@keyframes mo-rise { 0%, 30% { box-shadow: inset 3px 0 0 var(--brass); } 100% { box-shadow: inset 3px 0 0 transparent; } }
+@keyframes mo-fall { 0%, 30% { box-shadow: inset 3px 0 0 var(--line); } 100% { box-shadow: inset 3px 0 0 transparent; } }
+
+/* ── 첫 등장: 시세 선이 실제 값으로 그려지고, 시간대 막대가 바닥에서 선다(처음 한 번만) ── */
+.mo-draw path.line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mo-draw 1100ms var(--mo-ease-out) forwards; animation-delay: var(--mo-d, 0ms); }
+.mo-draw path.area { opacity: 0; animation: mo-fade 700ms ease forwards; animation-delay: calc(var(--mo-d, 0ms) + 500ms); }
+@keyframes mo-draw { to { stroke-dashoffset: 0; } }
+@keyframes mo-fade { to { opacity: 1; } }
+.mo-grow rect.b { transform-box: fill-box; transform-origin: 50% 100%; animation: mo-grow 620ms var(--mo-ease-out) both; animation-delay: var(--mo-d, 0ms); }
+@keyframes mo-grow { from { transform: scaleY(0); } }
+
+/* ── 손에 닿는 반응: 크기는 그대로, 색·선만 바뀐다(글자가 출렁이지 않게) ── */
+.tool, .seg button, .sh-x, .theme-btn, .upd-btn, .sh-tools button, .more-d, .rel-btn { transition: color var(--mo-micro) ease, background-color var(--mo-micro) ease, border-color var(--mo-micro) ease; }
+:focus-visible { transition: outline-offset var(--mo-micro) var(--mo-ease-out); }
+
+/* ── 전체 메뉴 시트: iOS 시트 곡선 · 뒤 화면 스크롤 잠금 ── */
+@media (max-width: 760px), (max-height: 520px) and (orientation: landscape) and (max-width: 1000px) {
+  .sheet[open] { animation: mo-sheet-up var(--mo-content) var(--mo-ease-out); }
+  .sheet[open]::backdrop { animation: mo-fade 240ms ease; }
+  html:has(dialog.sheet[open]), html:has(dialog.drawer[open]) { overflow: hidden; }
+}
+@keyframes mo-sheet-up { from { transform: translateY(48px); opacity: .4; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mo-ind, .mo-hov, .mo-tab-ind, .bar.mo-sticky, .views.mo-sticky { transition: none; }
+  .mo-rise, .mo-fall, .mo-draw path.line, .mo-draw path.area, .mo-grow rect.b { animation: none; stroke-dashoffset: 0; opacity: 1; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+@media print { .mo-ind, .mo-hov, .mo-tab-ind { display: none; } .mo-compact .bar, .mo-compact .views { transform: none; } }

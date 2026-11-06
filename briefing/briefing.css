@@ -259,3 +259,11 @@
   .bf-chat, .bf-ask, .bf-head-act, .bf-act, .bf-pin { display: none !important; }
   .bf { display: block; }
 }
+
+/* 모션 계층의 접힌 머리(mo-compact)와 함께 움직인다 — 이름 막대가 접히면 고정 막대·대화 창도 그만큼 올라간다 */
+.bf-pin { transition: transform var(--mo-nav, 240ms) var(--mo-ease-out, ease-out); }
+.mo-compact .bf-pin { transform: translateY(calc(-1 * var(--bar-h, 56px))); }
+@media (min-width: 761px) {
+  .bf-chat { transition: transform var(--mo-nav, 240ms) var(--mo-ease-out, ease-out); }
+  .mo-compact .bf-chat { transform: translateY(calc(-1 * var(--bar-h, 56px))); }
+}

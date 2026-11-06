@@ -1,6 +1,7 @@
 // 로컬 확인용 서버: 정적 파일 + api/**/*.mjs 함수 + 그 밖의 경로(/assets, /api/dashboard)는 운영 사이트로 넘긴다.
 //   node scripts/dev.mjs                 → http://localhost:8800/briefing/
 //   DEV_FAKE_AI=1 node scripts/dev.mjs   → API 키 없이 AI 화면 상태를 점검(가짜 해석·가짜 답 — 화면 검수 전용, 배포 코드에 없음)
+//   DEV_SITE_DIR=<운영 소스 폴더> node scripts/dev.mjs → 이 저장소 모듈 + 운영 정적 파일(통합 패치 적용본)을 함께 띄워 홈 화면까지 점검
 import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
@@ -10,6 +11,7 @@ import { DEFAULT_ORIGIN, config, getBriefing, insightsFor } from "../api/briefin
 const ROOT = new URL("..", import.meta.url).pathname;
 const PORT = Number(process.env.PORT) || 8800;
 const UPSTREAM = process.env.UPSTREAM || DEFAULT_ORIGIN;
+const SITE = process.env.DEV_SITE_DIR ? normalize(process.env.DEV_SITE_DIR) : null;
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml" };
 
 function fakeClaude() {
@@ -83,8 +85,10 @@ http.createServer(async (req, res) => {
     }
     let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, "");
     if (p.endsWith("/")) p += "index.html";
-    const file = join(ROOT, p);
-    if (file.startsWith(ROOT) && !p.includes("node_modules") && !p.split(/[/\\]/).some((seg) => seg.startsWith("."))) {
+    const safe = !p.includes("node_modules") && !p.split(/[/\\]/).some((seg) => seg.startsWith("."));
+    for (const base of [ROOT, SITE].filter(Boolean)) {
+      const file = join(base, p);
+      if (!safe || !file.startsWith(base)) continue;
       const s = await stat(file).catch(() => null);
       if (s?.isFile()) { res.writeHead(200, { "content-type": TYPES[extname(file)] || "application/octet-stream", "cache-control": "no-store" }); return res.end(await readFile(file)); }
     }
@@ -95,4 +99,4 @@ http.createServer(async (req, res) => {
     if (!res.headersSent) res.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
     res.end(String(e?.message || e));
   }
-}).listen(PORT, () => console.log(`http://localhost:${PORT}/briefing/${fake ? "  (가짜 AI)" : ""}`));
+}).listen(PORT, () => console.log(`http://localhost:${PORT}/${SITE ? "" : "briefing/"}${fake ? "  (가짜 AI)" : ""}${SITE ? `  (운영 정적 파일: ${SITE})` : ""}`));
