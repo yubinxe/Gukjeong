@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>국정 한눈에</title>
+<meta name="description" content="대통령 동정, 정부 정책, 국회, 증시·환율·부동산·산업 등 경제를 한 화면에서 보는 국민용 국정 상황판입니다. 김유빈(Yubin Kim) 기획·개발.">
+<meta property="og:title" content="국정 한눈에">
+<meta property="og:description" content="대통령 동정, 정책, 국회, 경제 지표를 한 화면에서.">
+<meta property="og:locale" content="ko_KR">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#18301f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="국정 한눈에">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="canonical" href="https://gukjeong-hannune.vercel.app/">
+<meta property="og:url" content="https://gukjeong-hannune.vercel.app/">
+<meta name="author" content="김유빈 (Yubin Kim)">
+<link rel="author" href="https://yubinxe.github.io/Portfolio/">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "국정 한눈에 — 국민용 국정 상황판", "url": "https://gukjeong-hannune.vercel.app/", "description": "대통령 동정, 정부 정책, 국회, 증시·환율·부동산·산업 등 경제를 한 화면에서 보는 국민용 국정 상황판. 김유빈 기획·개발.", "inLanguage": "ko-KR", "creator": {"@type": "Person", "@id": "https://yubinxe.github.io/Portfolio/#person", "name": "김유빈", "alternateName": "Yubin Kim", "url": "https://yubinxe.github.io/Portfolio/", "sameAs": ["https://github.com/yubinxe", "https://www.instagram.com/yubinxe/", "https://yubinxe.tistory.com/", "https://blog.naver.com/yubinxe"]}, "author": {"@id": "https://yubinxe.github.io/Portfolio/#person"}, "applicationCategory": "NewsApplication", "operatingSystem": "Web", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/style.css?v=2-9-1">
+<script>
+  try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+</script>
+<script type="module" src="assets/app.js?v=2-9-1"></script>
+</head>
+<body>
+<a class="skip" href="#main">본문 바로가기</a>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <h1><a href="./" class="home-link" data-home title="처음 화면으로">국정 한눈에</a></h1>
+      <span class="brand-sub">국정·경제 상황판 · 정부기관 공개 정보 연계</span>
+    </div>
+    <form class="search" role="search" id="searchForm">
+      <label for="q" class="visually-hidden">국내·해외 기사 검색</label>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
+      <input id="q" type="search" placeholder="기사 검색 · 국내와 해외" autocomplete="off" enterkeyhint="search">
+      <kbd aria-hidden="true">/</kbd>
+    </form>
+    <dl class="status">
+      <div><dt>오늘</dt><dd id="today">-</dd></div>
+      <div><dt>임기</dt><dd id="term">-</dd></div>
+      <div><dt>현재</dt><dd><span id="clock" class="tnum">--:--</span></dd></div>
+      <div><dt>갱신</dt><dd><button type="button" class="upd-btn" id="refreshBtn" title="지금 다시 불러오기"><span id="updated">-</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg></button></dd></div>
+    </dl>
+    <button type="button" class="search-tg" id="searchToggle" aria-label="기사 검색 열기" aria-expanded="false"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg></button>
+    <button type="button" class="bm-tg" id="bmBtn" aria-label="저장한 기사" title="저장한 기사"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 3h9v14l-4.5-3.3L5.5 17z"/></svg><span class="bm-n" id="bmN" hidden>0</span></button>
+    <button type="button" class="theme-btn" id="themeBtn" aria-label="화면 테마 전환">어둡게</button>
+  </div>
+</header>
+
+<nav class="views" aria-label="보기 선택">
+  <div class="views-in" role="tablist">
+    <a href="./" role="tab" data-view="home" aria-selected="true">종합 상황판</a>
+    <a href="?v=global" role="tab" data-view="global" aria-selected="false">해외 토픽</a>
+    <a href="?v=policy" role="tab" data-view="policy" aria-selected="false">입법·정책</a>
+    <a href="?v=macro" role="tab" data-view="macro" aria-selected="false">거시경제 읽기</a>
+    <a href="?v=street" role="tab" data-view="street" aria-selected="false">시장 분석</a>
+    <a href="?v=world" role="tab" data-view="world" aria-selected="false">세계가 본 한국</a>
+    <a href="?v=compare" role="tab" data-view="compare" aria-selected="false">국내외 보도 비교</a>
+    <a href="?v=sources" role="tab" data-view="sources" aria-selected="false">출처 분석</a>
+    <a href="?v=realty" role="tab" data-view="realty" aria-selected="false">부동산 동향</a>
+    <a href="./" class="nav-temp" id="navTemp" data-home title="보도가 얼마나 빠르고 한쪽으로 몰리는지(0~100). 국정 평가나 여론조사가 아닙니다." hidden><span class="nt-k">국정 온도</span><b id="navTempV">-</b><span class="nt-l" id="navTempL"></span></a>
+  </div>
+</nav>
+
+<main id="main" class="board">
+  <div id="notice" class="notice" role="status" hidden></div>
+  <div id="v-home">
+
+  <section class="banner" aria-labelledby="banner-h">
+    <div class="banner-txt">
+      <p class="banner-k">오늘의 국정·경제 상황</p>
+      <h2 id="banner-h" class="banner-d"></h2>
+      <p class="banner-s" id="bannerSum">자료를 불러오는 중입니다</p>
+    </div>
+    <dl class="gauges" id="gauges" aria-label="오늘의 지수"></dl>
+    <p class="banner-credit">사진: 청와대 본관, kallerna, CC BY-SA 4.0, 위키미디어 공용</p>
+  </section>
+
+  <section class="kpis" aria-label="주요 시장 지표" id="markets"></section>
+
+  <div id="dash" class="grid">
+    <section class="panel p-brief" aria-labelledby="brief-h">
+      <header class="ph"><h2 id="brief-h">3줄 브리핑</h2><span class="pm">보도와 시세에서 자동 작성 · 논평 없음</span>
+        <button type="button" class="tool" id="copyBtn">복사</button><button type="button" class="tool" id="printBtn">인쇄</button></header>
+      <ol class="brief3" id="brief3"></ol>
+    </section>
+
+    <section class="panel p-focus" aria-labelledby="focus-h">
+      <header class="ph"><h2 id="focus-h">가장 많은 언론이 다룬 사안</h2><span class="pm" id="focusMeta"></span></header>
+      <article class="focus" id="focus"></article>
+    </section>
+
+    <section class="panel p-sig" aria-labelledby="sig-h">
+      <header class="ph"><h2 id="sig-h">규칙 기반 신호</h2><span class="pm">보도 급증 · 보도 지속 · 시장 변동</span></header>
+      <ol class="sig" id="signals"></ol>
+    </section>
+
+    <section class="panel p-top" aria-labelledby="top-h">
+      <header class="ph"><h2 id="top-h">이어지는 주요 사안</h2><span class="pm">보도 언론사 수 기준</span></header>
+      <ol class="top" id="top"></ol>
+    </section>
+
+    <section class="panel p-lead" aria-labelledby="lead-h">
+      <header class="ph"><h2 id="lead-h">대통령 동정</h2><a class="pm link" href="?s=president" data-sec="president">전체</a></header>
+      <ol class="feed" id="lead"></ol>
+    </section>
+
+    <section class="panel p-kw" aria-labelledby="kw-h">
+      <header class="ph"><h2 id="kw-h">오늘의 핵심 키워드</h2><span class="pm">기사 수</span></header>
+      <ol class="kw" id="keywords"></ol>
+    </section>
+
+    <section class="panel p-flow" aria-labelledby="flow-h">
+      <header class="ph"><h2 id="flow-h">한눈에 보는 흐름</h2><span class="pm">막대를 누르면 자세히 볼 수 있습니다</span></header>
+      <div class="flow">
+        <figure class="fc fc-hour">
+          <figcaption><b>24시간 보도 흐름</b><span id="hourMeta"></span></figcaption>
+          <div class="hours" id="hours"></div>
+        </figure>
+        <figure class="fc fc-vol">
+          <figcaption><b>분야별 보도량</b><span>최근 2일 기사 수</span></figcaption>
+          <ol class="vol" id="volume"></ol>
+        </figure>
+        <figure class="fc fc-story">
+          <figcaption><b>주요 사안 보도 규모</b><span>언론사 수 · 매체 유형별</span></figcaption>
+          <ol class="sbars" id="storyBars"></ol>
+        </figure>
+      </div>
+    </section>
+
+    <div class="desks" id="desk"></div>
+
+    <section class="panel p-links" aria-labelledby="links-h">
+      <header class="ph"><h2 id="links-h">정부 공식 누리집</h2><span class="pm">원문 자료 확인 · 새 창으로 열림</span></header>
+      <div class="links">
+        <div class="lgroup">
+          <h3>국정·입법</h3>
+          <ul role="list">
+            <li><a href="https://www.president.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.president.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">청와대</span><span class="lh">president.go.kr</span></a></li>
+            <li><a href="https://www.opm.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.opm.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국무조정실</span><span class="lh">opm.go.kr</span></a></li>
+            <li><a href="https://www.korea.kr" target="_blank" rel="noopener"><img src="assets/icons/www.korea.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">정책브리핑</span><span class="lh">korea.kr</span></a></li>
+            <li><a href="https://www.assembly.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.assembly.go.kr.ico" alt="" width="20" height="20" decoding="async"><span class="ln">국회</span><span class="lh">assembly.go.kr</span></a></li>
+            <li><a href="https://likms.assembly.go.kr/bill/main.do" target="_blank" rel="noopener"><img src="assets/icons/likms.assembly.go.kr.ico" alt="" width="20" height="20" decoding="async"><span class="ln">의안정보시스템</span><span class="lh">likms.assembly.go.kr</span></a></li>
+            <li><a href="https://opinion.lawmaking.go.kr" target="_blank" rel="noopener"><img src="assets/icons/opinion.lawmaking.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국민참여입법센터</span><span class="lh">opinion.lawmaking.go.kr</span></a></li>
+            <li><a href="https://www.law.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.law.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국가법령정보센터</span><span class="lh">law.go.kr</span></a></li>
+            <li><a href="https://www.nec.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.nec.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">중앙선거관리위원회</span><span class="lh">nec.go.kr</span></a></li>
+            <li><a href="https://www.gov.kr" target="_blank" rel="noopener"><img src="assets/icons/www.gov.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">정부24</span><span class="lh">gov.kr</span></a></li>
+            <li><a href="https://www.epeople.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.epeople.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국민신문고</span><span class="lh">epeople.go.kr</span></a></li>
+          </ul>
+        </div>
+        <div class="lgroup">
+          <h3>경제·금융</h3>
+          <ul role="list">
+            <li><a href="https://www.moef.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.moef.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">재정경제부</span><span class="lh">moef.go.kr</span></a></li>
+            <li><a href="https://www.mpb.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.mpb.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">기획예산처</span><span class="lh">mpb.go.kr</span></a></li>
+            <li><a href="https://www.bok.or.kr" target="_blank" rel="noopener"><img src="assets/icons/www.bok.or.kr.ico" alt="" width="20" height="20" decoding="async"><span class="ln">한국은행</span><span class="lh">bok.or.kr</span></a></li>
+            <li><a href="https://www.fsc.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.fsc.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">금융위원회</span><span class="lh">fsc.go.kr</span></a></li>
+            <li><a href="https://www.fss.or.kr" target="_blank" rel="noopener"><img src="assets/icons/www.fss.or.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">금융감독원</span><span class="lh">fss.or.kr</span></a></li>
+            <li><a href="https://www.krx.co.kr" target="_blank" rel="noopener"><img src="assets/icons/www.krx.co.kr.ico" alt="" width="20" height="20" decoding="async"><span class="ln">한국거래소</span><span class="lh">krx.co.kr</span></a></li>
+            <li><a href="https://dart.fss.or.kr" target="_blank" rel="noopener"><img src="assets/icons/dart.fss.or.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">전자공시 DART</span><span class="lh">dart.fss.or.kr</span></a></li>
+            <li><a href="https://www.kostat.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.kostat.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국가데이터처</span><span class="lh">kostat.go.kr</span></a></li>
+            <li><a href="https://kosis.kr" target="_blank" rel="noopener"><img src="assets/icons/kosis.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">KOSIS 국가통계포털</span><span class="lh">kosis.kr</span></a></li>
+            <li><a href="https://www.motie.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.motie.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">산업통상부</span><span class="lh">motie.go.kr</span></a></li>
+            <li><a href="https://www.molit.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.molit.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국토교통부</span><span class="lh">molit.go.kr</span></a></li>
+            <li><a href="https://www.reb.or.kr" target="_blank" rel="noopener"><img src="assets/icons/www.reb.or.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">한국부동산원</span><span class="lh">reb.or.kr</span></a></li>
+            <li><a href="https://www.customs.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.customs.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">관세청</span><span class="lh">customs.go.kr</span></a></li>
+          </ul>
+        </div>
+        <div class="lgroup">
+          <h3>외교·안보·사회</h3>
+          <ul role="list">
+            <li><a href="https://www.mofa.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.mofa.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">외교부</span><span class="lh">mofa.go.kr</span></a></li>
+            <li><a href="https://www.mnd.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.mnd.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">국방부</span><span class="lh">mnd.go.kr</span></a></li>
+            <li><a href="https://www.unikorea.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.unikorea.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">통일부</span><span class="lh">unikorea.go.kr</span></a></li>
+            <li><a href="https://www.moel.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.moel.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">고용노동부</span><span class="lh">moel.go.kr</span></a></li>
+            <li><a href="https://www.mohw.go.kr" target="_blank" rel="noopener"><img src="assets/icons/www.mohw.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">보건복지부</span><span class="lh">mohw.go.kr</span></a></li>
+            <li><a href="https://www.data.go.kr" target="_blank" rel="noopener"><img src="assets/icons/data.go.kr.png" alt="" width="20" height="20" decoding="async"><span class="ln">공공데이터포털</span><span class="lh">data.go.kr</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section id="results" class="panel results" aria-labelledby="results-h" hidden>
+    <header class="ph">
+      <h2 id="results-h"></h2>
+      <span class="pm" id="results-meta"></span>
+      <button type="button" class="back" id="clearBtn">상황판으로 돌아가기</button>
+    </header>
+    <h3 class="res-h" id="localH" hidden>상황판에 실린 기사</h3>
+    <ol class="feed wide" id="resultList"></ol>
+    <div id="liveRes" class="live-res"></div>
+  </section>
+  </div>
+
+  <section id="v-policy" class="view" aria-labelledby="policy-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="policy-h">입법·정책 모니터링</h2>
+        <p class="vh-sub" id="policySub">국회와 정부가 공개한 입법예고·일정·보도자료를 한곳에 모았습니다. 모든 항목은 원문 공식 누리집으로 연결됩니다.</p>
+      </div>
+    </header>
+    <dl class="pol-kpi" id="polKpi"></dl>
+    <div class="pol-grid">
+      <section class="panel pol-p"><header class="ph"><h2>국회 입법예고</h2><span class="pm">의원 발의 법률안 · 의견 접수 중</span><a class="pm link" href="https://pal.assembly.go.kr/napal/lgsltpa/lgsltpaOngoing/list.do" target="_blank" rel="noopener">국회입법예고 ↗</a></header><ol class="pol-list" id="polAssembly"></ol></section>
+      <section class="panel pol-p"><header class="ph"><h2>정부 입법예고</h2><span class="pm">부처 법령안 · 의견 접수 마감순</span><a class="pm link" href="https://opinion.lawmaking.go.kr/gcom/ogLmPp" target="_blank" rel="noopener">국민참여입법센터 ↗</a></header><ol class="pol-list" id="polGov"></ol></section>
+      <section class="panel pol-p"><header class="ph"><h2>국회 일정</h2><div class="seg" role="group" aria-label="일정 종류" id="polSchedTabs"></div></header><ol class="pol-list" id="polSched"></ol></section>
+      <section class="panel pol-p"><header class="ph"><h2>보도자료</h2><div class="seg" role="group" aria-label="보도자료 출처" id="polPressTabs"></div></header><ol class="pol-list" id="polPress"></ol></section>
+      <section class="panel pol-p pol-people"><header class="ph"><h2>보도에 많이 언급된 인물</h2><span class="pm">기사 제목의 이름·직함 기준</span></header><ol class="pol-list" id="polPeople"></ol>
+        <p class="dw-note" style="padding:0 16px 12px">제목에 직함과 함께 나온 이름만 셉니다. 발언 내용이나 입장은 판정하지 않습니다.</p></section>
+    </div>
+  </section>
+
+  <section id="v-macro" class="view" aria-labelledby="macro-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="macro-h">거시경제 읽기</h2>
+        <p class="vh-sub">한국은행 BOK 이슈노트의 요지에서 문단마다 첫 문장만 원문 그대로 옮겼습니다. 해설을 덧붙이지 않으며, 용어 풀이만 이 지면이 따로 썼습니다.</p>
+      </div>
+      <div class="vh-tools"><div class="seg" role="group" aria-label="주제" id="macroTopics"></div></div>
+    </header>
+    <section class="ecos" aria-labelledby="ecos-h">
+      <header class="ecos-h">
+        <img src="assets/icons/www.bok.or.kr.ico" alt="" width="20" height="20">
+        <h3 id="ecos-h">숫자로 보는 한국 경제</h3>
+        <span class="pm">한국은행 경제통계시스템 · 지표마다 최신 발표 시점이 다릅니다 · 누르면 추이와 해설</span>
+        <span class="pm" id="ecosMeta"></span>
+      </header>
+      <ol class="ecos-grid" id="ecosGrid"></ol>
+    </section>
+    <div class="macro">
+      <ol class="wlist" id="macroNotes"></ol>
+      <aside class="macro-side">
+        <section class="panel"><header class="ph"><h2>쉽게 읽는 한국은행</h2><span class="pm">한국은행 블로그</span></header><ol class="pol-list" id="macroBlog"></ol></section>
+        <section class="panel"><header class="ph"><h2>최근 정책 보고서·의사록</h2><a class="pm link" href="https://www.bok.or.kr/portal/bbs/P0000559/list.do?menuNo=200690" target="_blank" rel="noopener">한국은행 ↗</a></header><ol class="pol-list" id="macroReports"></ol></section>
+        <section class="panel"><header class="ph"><h2>경제 용어 풀이</h2><span class="pm">이 지면 작성</span></header><dl class="gloss" id="macroGloss"></dl></section>
+      </aside>
+    </div>
+  </section>
+
+  <section id="v-street" class="view" aria-labelledby="street-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="street-h">시장 분석</h2>
+        <p class="vh-sub">미국·한국 대표 지수와 시가총액 상위 우량주 31종목. 숫자 규칙으로 걸러 낸 움직임과 종목별 24시간 보도를 한 화면에 모았습니다. 투자 권유가 아닙니다.</p>
+      </div>
+      <div class="vh-tools"><span class="pm" id="stMeta"></span></div>
+    </header>
+    <div class="st-state" id="stState"></div>
+    <div class="st-grid">
+      <section class="panel st-sig"><header class="ph"><h2>지금 눈여겨볼 움직임</h2><span class="pm">큰 변동 · 거래량 급증 · 52주 고저 · 20일선 · 보도 집중</span></header><ol class="sg-list" id="stSignals"></ol></section>
+      <section class="panel st-heat"><header class="ph"><h2>우량주 상태판</h2><div class="seg" role="group" aria-label="정렬" id="stSort"></div></header>
+        <div class="heat2"><div><h3 class="heat-h">미국 <small>달러</small></h3><ol class="heat" id="stHeatUs"></ol></div><div><h3 class="heat-h">한국 <small>원</small></h3><ol class="heat" id="stHeatKr"></ol></div></div>
+        <p class="dw-note" style="padding:0 16px 12px">색이 진할수록 하루 등락이 큽니다(4% 이상 최대). 아래 가는 막대는 52주 범위 안의 현재 위치입니다.</p></section>
+      <section class="panel st-feed"><header class="ph"><h2>사건·사고와 이슈</h2><span class="pm">종목별 24시간 보도 · 제목 낱말로 자동 분류</span></header>
+        <div class="seg st-tabs" role="group" aria-label="보도 종류" id="stFeedTabs"></div><ol class="sf-list" id="stFeed"></ol></section>
+      <section class="panel st-link"><header class="ph"><h2>밤사이 미국 → 오늘 한국</h2><span class="pm">업종이 겹치는 종목 · 인과관계 아님</span></header><ol class="lk-list" id="stLink"></ol></section>
+    </div>
+  </section>
+
+  <section id="v-realty" class="view" aria-labelledby="realty-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="realty-h">부동산 동향</h2>
+        <p class="vh-sub">한국부동산원·국토교통부·한국은행 공식 통계와 한 주간 보도를 한 화면에 모았습니다. 인사이트 문장은 통계에서 규칙으로 뽑은 사실이며 전망이 아닙니다.</p>
+      </div>
+      <div class="vh-tools"><span class="pm" id="reMeta"></span></div>
+    </header>
+    <section class="re-hero" id="reHero" aria-label="이번 주 부동산 요약"></section>
+    <section class="panel re-ins-p"><header class="ph"><h2>핵심 인사이트</h2><span class="pm">통계에서 자동 작성 · 해석·전망 없음 · 누르면 추이</span></header><ol class="re-ins" id="reIns"></ol></section>
+    <section class="panel re-heat-p"><header class="ph"><h2>월별 아파트 가격 변동률 지도</h2><div class="seg" role="group" aria-label="매매·전세" id="reHeatTabs"></div></header><div class="re-pad" id="reHeat"></div></section>
+    <div class="re-charts">
+      <section class="panel"><header class="ph"><h2>아파트 매매가격 1년 추이</h2><span class="pm">한국부동산원 지수 · 2026년 6월 = 100</span></header><div class="re-pad" id="reTrend"></div></section>
+      <section class="panel"><header class="ph"><h2>지역별 매매·전세</h2><div class="seg" role="group" aria-label="비교 기준" id="reBasis"></div></header><div class="re-pad" id="reRegion"></div></section>
+      <section class="panel"><header class="ph"><h2>미분양 주택</h2><span class="pm">국토교통부 · 시도별</span></header><div class="re-pad" id="reUnsold"></div></section>
+      <section class="panel"><header class="ph"><h2>금리</h2><span class="pm">대출·자금 조달 비용</span></header><div class="re-rates" id="reRates"></div>
+        <div id="reTape"></div></section>
+    </div>
+    <div class="re-week">
+      <section class="panel re-talk-p"><header class="ph"><h2>이번 주 보도</h2><span class="pm">최근 7일</span></header><div class="re-pad" id="reTalk"></div></section>
+      <div class="re-news" id="reNews"></div>
+    </div>
+  </section>
+
+  <section id="v-world" class="view" aria-labelledby="world-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="world-h">세계가 본 한국</h2>
+        <p class="vh-sub" id="worldSub"></p>
+      </div>
+      <div class="vh-tools">
+        <div class="seg" role="group" aria-label="매체 권역" id="worldBloc"></div>
+        <div class="seg" role="group" aria-label="제목 표시" id="worldMode"></div>
+      </div>
+    </header>
+    <div class="wfilter">
+      <div class="seg" role="group" aria-label="다룬 대상" id="worldRegion"></div>
+      <div class="seg" role="group" aria-label="기사 유형" id="worldType"></div>
+      <p class="tr-note" id="trNote">한국어 제목은 기계 번역입니다. 오역이 있을 수 있으니 판단은 원문 제목을 기준으로 하십시오.</p>
+    </div>
+    <div class="world">
+      <ol class="wlist" id="worldList"></ol>
+      <aside class="wside" aria-labelledby="outlet-h">
+        <h3 id="outlet-h">수집 대상 해외 매체</h3>
+        <p class="wside-note">공개된 소유·운영 형태만 적었습니다. 정치 성향은 판정하지 않습니다.</p>
+        <ol class="olist" id="outletList"></ol>
+      </aside>
+    </div>
+  </section>
+
+  <section id="v-global" class="view" aria-labelledby="global-h" hidden>
+    <section class="atlas" id="atlas" aria-labelledby="at-h">
+      <header class="at-top">
+        <div class="at-ti"><p class="at-k">Global Political Intelligence</p><h2 id="at-h">세계 권력 지형</h2></div>
+        <div class="at-status" id="atStatus"></div>
+        <div class="at-search"><label for="atSearch" class="visually-hidden">국가 검색</label>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></svg>
+          <input id="atSearch" list="atList" type="search" placeholder="국가 검색 · 예: 프랑스" autocomplete="off" enterkeyhint="search"><datalist id="atList"></datalist></div>
+        <div class="at-acts"><button id="atCmpBtn" class="at-btn" type="button" disabled>비교 0</button><button id="atShareAll" class="at-btn" type="button">화면 링크</button></div>
+      </header>
+      <div class="at-body">
+        <aside class="at-left" aria-label="지도 설정">
+          <h3 class="at-lh">지도 보기</h3>
+          <div class="at-modes" id="atModes" role="group" aria-label="지도 보기"></div>
+          <h3 class="at-lh">지역</h3>
+          <div class="at-regions" id="atRegions" role="group" aria-label="지역"></div>
+          <div class="at-view"><button id="atProj" class="at-btn" type="button">평면 지도</button><button id="atRotate" class="at-btn" type="button" aria-pressed="false">자동 회전</button><button id="atHome" class="at-btn" type="button">처음 위치</button></div>
+          <p class="at-note" id="atNote"></p>
+        </aside>
+        <div class="at-stage">
+          <div class="at-map" id="atMap" role="region" aria-label="세계 지도. 나라를 누르면 정보가 열립니다. 키보드로는 위쪽 국가 검색을 이용하십시오."></div>
+          <div class="at-tip" id="atTip" hidden></div>
+          <div class="at-legend" id="atLegend"></div>
+          <div class="at-loading" id="atLoading" hidden>지도를 그리는 중</div>
+        </div>
+        <aside class="at-side" id="atSide" aria-live="polite" aria-label="세계 브리핑과 국가 정보"></aside>
+      </div>
+      <div class="at-time" id="atTime">
+        <label for="atYear">시점</label><output id="atYearV" for="atYear">현재</output>
+        <div class="at-track"><input type="range" id="atYear" min="1946" max="2026" step="1"><div class="at-ticks" id="atTicks" aria-hidden="true"></div></div>
+        <p id="atTimeNote"></p>
+      </div>
+    </section>
+
+    <header class="vh">
+      <div>
+        <h2 id="global-h">해외 토픽</h2>
+        <p class="vh-sub" id="globalSub">해외 주요 언론이 지금 다루는 국제 이슈를 주제별로 모았습니다.</p>
+      </div>
+      <div class="vh-tools">
+        <div class="seg" role="group" aria-label="제목 표시" id="globalMode"></div>
+      </div>
+    </header>
+    <div class="gt-nav" role="group" aria-label="주제" id="globalTopics"></div>
+    <p class="tr-note">한국어 제목은 기계 번역입니다. 판단은 원문 제목을 기준으로 하십시오. 유료 매체는 제목과 링크만 보여 줍니다.</p>
+    <div id="globalBody" class="gt-body"></div>
+  </section>
+
+  <section id="v-compare" class="view" aria-labelledby="compare-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="compare-h">국내외 보도 비교</h2>
+        <p class="vh-sub">같은 사건을 다룬 국내 보도와 해외 보도를 나란히 놓았습니다. 대조는 제목에 나온 요소까지만 자동으로 하며, 사실관계의 충돌이나 진위는 판정하지 않습니다.</p>
+      </div>
+    </header>
+    <div id="compareBody"></div>
+  </section>
+
+  <section id="v-sources" class="view" aria-labelledby="sources-h" hidden>
+    <header class="vh">
+      <div>
+        <h2 id="sources-h">출처 분석</h2>
+        <p class="vh-sub" id="sourcesSub"></p>
+      </div>
+    </header>
+    <div id="sourcesBody"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>국정 한눈에는 정부·대통령실과 관계없는 비영리 개인 프로젝트입니다. 기사 제목·출처·시각만 보여 주고 원문으로 연결하며, 저작권과 책임은 각 언론사에 있습니다.</p>
+  <p>지수 산정: 보도 집중 지수는 보도 속도(최근 3시간 기사 비중), 최대 사안 비중, 보도 급증 사안 수로 계산한 0~100 값으로, 보도가 얼마나 빠르고 한쪽으로 몰리는지만 나타냅니다. 국정 평가나 여론조사가 아닙니다. 보도 단계(급증: 언론 4곳 이상 중 절반 이상이 3시간 안에 보도 / 지속: 20시간 넘게 보도 / 감소: 6시간 넘게 새 보도 없음)와 보도 범위(전국 매체·소수 매체·지역 매체 중심)도 이 규칙으로만 정합니다. 대표 제목은 통신·방송 기사를 우선하고, 없으면 묶음에서 가장 전형적인 제목을 씁니다.</p>
+  <p>해외 보도: 로이터·AP·프랑스24(AFP 전재 포함)·BBC·파이낸셜타임스·블룸버그·닛케이아시아·뉴욕타임스·월스트리트저널·가디언·알자지라·사우스차이나모닝포스트·교도통신·도이체벨레의 제목·매체·시각·원문 링크만 표시합니다. 유료 기사는 원문 접근을 우회하지 않습니다. 한국어 번역은 이용자 브라우저의 기기 내 번역 기능으로 만들며 오역이 있을 수 있습니다. 시각은 모두 보도 시각이며 사건 발생 시각과 다를 수 있습니다.</p>
+  <p>해외 토픽·기사 검색: Google 뉴스(영어판·한국어판) 검색 결과에서 해외 주요 매체 기사의 제목·매체·시각·원문 링크만 가져오고, 제목은 서버에서 한국어로 기계 번역합니다. 검색 대상은 국내·해외 모두 최근 7일 기사입니다.</p>
+  <p>입법·정책: 국회입법예고(pal.assembly.go.kr), 국민참여입법센터 (부처)입법예고, 대한민국 국회 RSS(보도자료·주요정치일정·의사일정 공지·행사알림·의원실 행사), 공정거래위원회 보도자료 목록에서 제목·일자·담당·원문 링크만 가져옵니다.</p>
+  <p>거시경제 읽기: 한국은행 공식 RSS(BOK 이슈노트·경제전망보고서·통화정책 보도자료·블로그)에서 제목·일자·요지 첫 문장과 원문 링크를 가져옵니다. 용어 풀이는 이 지면이 작성한 일반적 정의입니다.</p>
+  <p class="muted">출처: Google 뉴스(국내·해외), 정책브리핑, 네이버 금융(국내 지수·종목·환율, 1분 갱신)·Yahoo Finance(해외·원자재, 지연 시세) · 투자 판단용 아님 · 같은 사안을 다룬 기사는 하나로 묶고 보도한 언론사 수를 표시 · 약 20분마다 갱신</p>
+  <p class="maker">기획·개발 <a href="https://yubinxe.github.io/Portfolio/" target="_blank" rel="author noopener">김유빈 Yubin Kim · 포트폴리오 ↗</a></p>
+</footer>
+
+<div id="sourcesPop" popover class="pop" role="dialog" aria-label="함께 보도한 언론사"></div>
+
+<nav class="tabbar" aria-label="주요 화면">
+  <a href="./" data-view="home"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="4"/><rect x="13" y="10" width="7" height="10"/><rect x="4" y="13" width="7" height="7"/></svg><span>종합</span></a>
+  <a href="?v=global" data-view="global"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M4 12h16"/><path d="M12 4c2.4 2.2 3.6 4.9 3.6 8s-1.2 5.8-3.6 8c-2.4-2.2-3.6-4.9-3.6-8s1.2-5.8 3.6-8z"/></svg><span>해외</span></a>
+  <a href="?v=street" data-view="street"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16"/><path d="M5 15l4-4 3 3 6-7"/><path d="M14 7h4v4"/></svg><span>시장</span></a>
+  <a href="?v=realty" data-view="realty"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg><span>부동산</span></a>
+  <a href="?v=macro" data-view="macro"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M5 9l7-5 7 5"/><path d="M7 10v7M12 10v7M17 10v7"/></svg><span>거시경제</span></a>
+  <button type="button" id="moreBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>더보기</span></button>
+</nav>
+
+<dialog id="moreSheet" class="sheet" aria-labelledby="moreTitle">
+  <div class="sh-in">
+    <span class="sh-grip" aria-hidden="true"></span>
+    <header class="sh-h"><h2 id="moreTitle">전체 메뉴</h2><button type="button" class="sh-x" data-close-sheet aria-label="닫기">닫기</button></header>
+    <ol class="sh-list">
+      <li><a href="./" data-view="home"><b>종합 상황판</b><span>오늘 가장 많이 다룬 사안 · 시장 · 신호</span></a></li>
+      <li><a href="?v=global" data-view="global"><b>해외 토픽</b><span>미국 중간선거 · 미·중 · 전쟁 · 세계 경제</span></a></li>
+      <li><a href="?v=street" data-view="street"><b>시장 분석</b><span>미국장·한국장 · 우량주 · 분봉 차트</span></a></li>
+      <li><a href="?v=realty" data-view="realty"><b>부동산 동향</b><span>가격 · 미분양 · 금리 · 주간 보도</span></a></li>
+      <li><a href="?v=macro" data-view="macro"><b>거시경제 읽기</b><span>한국은행 지표 · 이슈노트</span></a></li>
+      <li><a href="?v=policy" data-view="policy"><b>입법·정책</b><span>입법예고 · 국회 일정 · 보도자료</span></a></li>
+      <li><a href="?v=world" data-view="world"><b>세계가 본 한국</b><span>해외 언론 보도</span></a></li>
+      <li><a href="?v=compare" data-view="compare"><b>국내외 보도 비교</b><span>같은 사안, 국내와 해외의 차이</span></a></li>
+      <li><a href="?v=sources" data-view="sources"><b>출처 분석</b><span>매체 분포 · 통신사 의존도</span></a></li>
+    </ol>
+    <div class="sh-tools">
+      <button type="button" id="sheetRefresh">지금 갱신</button>
+      <button type="button" id="sheetTheme">화면 밝기 전환</button>
+    </div>
+    <p class="sh-meta" id="sheetMeta"></p>
+  </div>
+</dialog>
+
+<dialog id="detail" class="drawer" aria-labelledby="dwTitle">
+  <div class="dw-in">
+    <header class="dw-h"><p class="dw-k" id="dwKind">자세히</p><button type="button" class="dw-x" id="dwClose" aria-label="닫기">닫기</button></header>
+    <div id="dwBody"></div>
+  </div>
+</dialog>
+</body>
+</html>

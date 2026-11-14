@@ -159,9 +159,9 @@ test("원문 항목표 → 자료: 분류 · 천원 단위 · 총계 대조 · �
 });
 
 test("운영 홈 통합: 모션 계층 · 새 메뉴 두 곳 · countUp 연결 · 두 번 돌려도 같다", async () => {
-  const html = await readFile(new URL("./fixtures/site-nav.html", import.meta.url), "utf8");
+  const html = await readFile(new URL("./fixtures/prod-2-9-1/index.html", import.meta.url), "utf8");
   const a = patchIndex(html);
-  assert.equal(a.changes.length, 3);
+  assert.ok(a.changes.some((c) => /오늘의 브리핑/.test(c)) && a.changes.some((c) => /공직자 재산 동향/.test(c)) && a.changes.some((c) => /모션 계층/.test(c)));
   assert.match(a.html, /<link rel="stylesheet" href="\/motion\/motion\.css\?v=1">/);
   assert.match(a.html, /<script type="module" src="\/motion\/motion\.js\?v=1"><\/script>/);
   for (const href of ["/briefing/", "/officials/"]) assert.equal((a.html.match(new RegExp(`href="${href}"`, "g")) || []).length, 2, `${href}: 위쪽 탭 줄 + 전체 메뉴`);
@@ -170,7 +170,7 @@ test("운영 홈 통합: 모션 계층 · 새 메뉴 두 곳 · countUp 연결 �
   const views = a.html.match(/<nav class="views"[\s\S]*?<\/nav>/)[0];
   assert.ok(views.indexOf("/officials/") > views.indexOf('data-view="policy"'), "공직자 재산 동향은 입법·정책 다음");
   assert.equal(patchIndex(a.html).changes.length, 0);
-  const js = "function countUp(root) {\n  if (!motionOK.matches) return;";
+  const js = await readFile(new URL("./fixtures/prod-2-9-1/app.js", import.meta.url), "utf8");
   const b = patchApp(js);
   assert.match(b.js, /if \(window\.__moCount\) return window\.__moCount\(root\);/);
   assert.equal(patchApp(b.js).changes.length, 0);
