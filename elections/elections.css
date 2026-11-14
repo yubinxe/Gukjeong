@@ -180,3 +180,20 @@
   .el-method dd { margin-bottom: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .el-chart .ctx { transition: none; } }
+
+/* 자료가 오기 전 자리를 미리 잡아 밀림(CLS)을 막는다 — 그려진 뒤의 높이와 같게 */
+.el-basis:empty { min-height: 18px; }
+.el-kpis:empty { min-height: 124px; }
+.el-verdict:empty { min-height: 60px; }
+#elPath:empty { min-height: 380px; }
+#elCard:empty { min-height: 330px; }
+.el-legend:empty { min-height: 18px; }
+#elRatio:empty { min-height: 822px; }
+#elTableWrap:empty { min-height: 1500px; }
+@media (max-width: 1100px) { #elCard:empty { min-height: 260px; } }
+@media (max-width: 760px) {
+  .el-kpis:empty { min-height: 230px; }
+  .el-verdict:empty { min-height: 130px; }
+  #elPath:empty { min-height: 300px; }
+  #elRatio:empty { min-height: 1230px; }
+}

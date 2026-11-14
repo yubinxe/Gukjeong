@@ -87,6 +87,8 @@ test("운영 원본 2-9-1 통합: 모든 기준 표지가 정확히 한 번 · �
   assert.match(a.html, /<div hidden><dt>임기<\/dt><dd id="term">-<\/dd><\/div>/, "임기 칸은 숨기되 id 는 남겨 app.js 가 깨지지 않게");
   assert.match(a.html, /<dt>최종 수집<\/dt><dd><button type="button" class="upd-btn" id="refreshBtn"[^>]*><i class="gk-st" id="gkSt"[^>]*><\/i><span id="updated">/);
   assert.match(a.html, /<span class="nt-k">보도 집중도<\/span>/);
+  assert.match(a.html, /<meta property="og:image" content="https:\/\/gukjeong-hannune\.vercel\.app\/og\/site\.png">/);
+  assert.match(a.html, /<meta property="og:image" content="https:\/\/gukjeong-hannune\.vercel\.app\/og\/site\.png">/);
   assert.ok(!/국정 온도/.test(a.html));
   assert.ok(!/\$\('term'\)\.textContent\}`/.test(b.js), "제목에 취임 경과를 붙이지 않음");
   assert.ok(!/fetchData\(`\/api\/dashboard\?t=\$\{Date\.now\(\)\}`, 55000\)\.then\(\(n\)/.test(b.js), "뒤에서 새로 받기에 캐시 우회 없음");

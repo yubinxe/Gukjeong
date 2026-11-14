@@ -8,7 +8,7 @@
 <meta property="og:title" content="선거 후 시장 — 국정 한눈에">
 <meta property="og:description" content="선거가 끝난 뒤, 시장은 평소보다 더 흔들렸나. 1992년 이후 26번의 선거를 같은 잣대로.">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:image" content="https://gukjeong-hannune.vercel.app/elections/og.png">
+<meta property="og:image" content="https://gukjeong-hannune.vercel.app/og/elections.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -72,9 +72,9 @@
       <p class="el-sub">투표 전날 값을 100으로 놓고 선거 뒤 거래일을 겹쳐 봅니다. 같은 잣대를 선거가 아닌 모든 날에도 대어 ‘평소의 범위’와 견줍니다. 선거가 시장을 움직였다는 뜻은 아닙니다.</p>
     </div>
     <div class="el-controls" role="toolbar" aria-label="보기 조건">
-      <div class="el-ctl"><span class="el-ctl-k" id="elAssetK">지표</span><div class="el-seg" id="elAsset" role="radiogroup" aria-labelledby="elAssetK"></div></div>
-      <div class="el-ctl"><span class="el-ctl-k" id="elKindK">선거</span><div class="el-seg" id="elKind" role="radiogroup" aria-labelledby="elKindK"></div></div>
-      <div class="el-ctl"><span class="el-ctl-k" id="elHK">기간</span><div class="el-seg" id="elH" role="radiogroup" aria-labelledby="elHK"></div></div>
+      <div class="el-ctl"><span class="el-ctl-k" id="elAssetK">지표</span><div class="el-seg" id="elAsset" role="radiogroup" aria-labelledby="elAssetK"><button type="button" role="radio" aria-checked="true" data-v="kospi">코스피</button><button type="button" role="radio" aria-checked="false" data-v="usdkrw">원·달러</button></div></div>
+      <div class="el-ctl"><span class="el-ctl-k" id="elKindK">선거</span><div class="el-seg" id="elKind" role="radiogroup" aria-labelledby="elKindK"><button type="button" role="radio" aria-checked="true" data-v="all">전체</button><button type="button" role="radio" aria-checked="false" data-v="P">대통령</button><button type="button" role="radio" aria-checked="false" data-v="G">국회의원</button><button type="button" role="radio" aria-checked="false" data-v="L">지방</button></div></div>
+      <div class="el-ctl"><span class="el-ctl-k" id="elHK">기간</span><div class="el-seg" id="elH" role="radiogroup" aria-labelledby="elHK"><button type="button" role="radio" aria-checked="true" data-v="60">60거래일</button><button type="button" role="radio" aria-checked="false" data-v="120">120거래일</button></div></div>
     </div>
     <p class="el-basis" id="elBasis"></p>
   </header>

@@ -44,6 +44,11 @@ export function patchIndex(html) {
     html = html.replace(upd[0], `<div><dt>최종 수집</dt><dd>${upd[1]}<i class="gk-st" id="gkSt" aria-hidden="true"></i>${upd[2]}<span class="gk-new" id="gkNew" hidden></span><span class="visually-hidden" id="gkLive" aria-live="polite"></span></dd></div>`);
     changes.push("머리 상태: '최종 수집 시각 · 신규 N건 · 상태' 표시 자리");
   }
+  if (!html.includes('property="og:image"')) {
+    const loc = must(/(<meta property="og:url" content="[^"]*">)/, html, "og:url 메타");
+    html = html.replace(loc[1], `${loc[1]}\n<meta property="og:image" content="https://gukjeong-hannune.vercel.app/og/site.png">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta name="twitter:card" content="summary_large_image">`);
+    changes.push("머리: 공유 이미지(og/site.png 1200×630) 연결");
+  }
   if (html.includes('<span class="nt-k">국정 온도</span>')) {
     html = html.replace('<span class="nt-k">국정 온도</span>', '<span class="nt-k">보도 집중도</span>');
     changes.push("위쪽 탭 줄: '국정 온도' → '보도 집중도'(국정 평가로 읽히지 않게)");
