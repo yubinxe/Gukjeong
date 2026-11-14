@@ -15,8 +15,9 @@ export const CASES = [
   { key: 'zoom200-1440', width: 720, scheme: 'light', dsf: 2 }, // 1440 화면을 200% 확대하면 CSS 폭 720
   { key: 'zoom200-768', width: 384, scheme: 'light', dsf: 2 },
 ];
-const SCOPES = { realty: ['header.bar', '#v-realty'], home: ['header.bar', 'nav.views', '#v-home'] };
-const READY = { realty: '#reTrend svg, #reTrend .empty', home: '#lead li, #top li' };
+const SCOPES = { realty: ['header.bar', '#v-realty'], home: ['header.bar', 'nav.views', '#v-home'], elections: ['header.bar', 'nav.views', '#el-main'] };
+const READY = { realty: '#reTrend svg, #reTrend .empty', home: '#lead li, #top li', elections: '#elRatio svg' };
+const PATHS = { home: '/', elections: '/elections/' };
 
 // 브라우저 안에서 돈다
 function inspect(scopeSel) {
@@ -113,7 +114,7 @@ export async function audit(base, { view = 'realty', out = null, shots = false, 
     for (const c of cases) {
       const ctx = await browser.newContext({ viewport: { width: c.width, height: c.dsf ? 450 : 900 }, deviceScaleFactor: c.dsf || 1, colorScheme: c.scheme, reducedMotion: 'reduce', isMobile: c.width < 760, hasTouch: c.width < 760 });
       const page = await ctx.newPage();
-      await page.goto(`${base}/${view === 'home' ? '' : `?v=${view}`}`, { waitUntil: 'load' });
+      await page.goto(`${base}${PATHS[view] || `/?v=${view}`}`, { waitUntil: 'load' });
       await page.waitForSelector(READY[view], { timeout: 30000 }).catch(() => {});
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(1200);

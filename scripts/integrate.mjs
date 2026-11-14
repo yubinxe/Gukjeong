@@ -11,6 +11,7 @@ const MOTION_V = "1", CORE_V = "1";
 export const MENUS = [
   { href: "/briefing/", label: "오늘의 브리핑", sub: "요약 · 해석 · 묻고 답하기", after: "home" },
   { href: "/officials/", label: "공직자 재산 동향", sub: "국회의원 재산공개 · 지역 분포 · 대수 비교", after: "policy" },
+  { href: "/elections/", label: "선거 후 시장", sub: "선거 뒤 코스피·환율 변동성 · 1992년 이후 26번", after: "street" },
 ];
 
 function must(re, text, what) {
@@ -60,7 +61,7 @@ export function patchIndex(html) {
 
 // 모듈 페이지(브리핑·공직자 재산 동향)의 머리 탐색을 운영 홈과 똑같이 맞춘다 — 메뉴가 바뀌어도 한 번 돌리면 따라온다.
 // <!-- shell:views --> … <!-- /shell:views --> 처럼 표지 사이만 갈아 끼운다. app.js 가 없는 페이지이므로 data-view 를 빼고 주소를 절대 경로로.
-export const MODULE_PAGES = { "briefing/index.html": "/briefing/", "officials/index.html": "/officials/" };
+export const MODULE_PAGES = { "briefing/index.html": "/briefing/", "officials/index.html": "/officials/", "elections/index.html": "/elections/" };
 export function shellBlocks(indexHtml, active) {
   const grab = (re, what) => must(re, indexHtml, what)[0];
   const abs = (h) => h.replace(/ data-view="[^"]*"/g, "").replace(/ data-home(?=[\s>])/g, "").replace(/href="\.\/"/g, 'href="/"').replace(/href="\?/g, 'href="/?');
