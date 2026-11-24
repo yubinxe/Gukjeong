@@ -6,6 +6,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { rebrand, OLD as OLD_NAME, NEW as NEW_NAME } from "./brand.mjs";
 
 const MOTION_V = "1", CORE_V = "1";
 export const MENUS = [
@@ -60,6 +61,10 @@ export function patchIndex(html) {
     const li = must(new RegExp(`(<li><a href="[^"]*" data-view="${m.after}">[\\s\\S]*?</li>)`), html, `전체 메뉴 data-view="${m.after}"`);
     html = html.replace(li[1], `${li[1]}\n      <li><a href="${m.href}"><b>${m.label}</b><span>${m.sub}</span></a></li>`);
     changes.push(`위쪽 탭 줄·전체 메뉴: '${m.label}' 추가`);
+  }
+  if (html.includes(OLD_NAME)) {
+    html = rebrand(html);
+    changes.push(`이름: '${OLD_NAME}' → '${NEW_NAME}'(제목·메타·머리·바닥글, 조사 맞춤)`);
   }
   return { html, changes };
 }
@@ -136,6 +141,7 @@ export function patchApp(js) {
     js = js.replace(p.find, () => p.repl);
     changes.push(`app.js: ${p.desc}`);
   }
+  if (js.includes(OLD_NAME)) { js = rebrand(js); changes.push(`app.js: 이름 '${NEW_NAME}'(복사 문구 등)`); }
   return { js, changes };
 }
 
@@ -176,6 +182,15 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const a = patchIndex(await readFile(idx, "utf8"));
   const b = patchApp(await readFile(app, "utf8"));
   const c = patchStyle(await readFile(sty, "utf8"));
+  // 이름만 바뀌는 운영 파일: 세계 지도 복사 문구(atlas.js) · 홈 화면 앱 이름(manifest) · 스타일 머리 주석
+  const named = [];
+  for (const rel of ["assets/atlas.js", "manifest.webmanifest", "assets/style.css"]) {
+    const f = join(root, rel);
+    const t = rel === "assets/style.css" ? c.css : await readFile(f, "utf8").catch(() => null);
+    if (t == null || !t.includes(OLD_NAME)) continue;
+    if (rel === "assets/style.css") { c.css = rebrand(c.css); c.changes.push("style.css: 이름(머리 주석)"); continue; }
+    named.push([f, rebrand(t)]); c.changes.push(`${rel}: 이름 '${NEW_NAME}'`);
+  }
   const pages = [];
   for (const [rel, href] of Object.entries(MODULE_PAGES)) {
     const file = join(root, rel);
@@ -190,6 +205,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     if (a.html) await writeFile(idx, a.html);
     if (b.changes.length) await writeFile(app, b.js);
     if (c.changes.length) await writeFile(sty, c.css);
+    for (const [f, t] of named) await writeFile(f, t);
     for (const [f, h] of pages) await writeFile(f, h);
   }
 }

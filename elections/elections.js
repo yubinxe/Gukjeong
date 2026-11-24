@@ -1,5 +1,7 @@
-// 국정 한눈에 · 선거 후 시장 — 화면 (의존성 0). 계산은 scripts/elections/build.mjs 가 끝내 두고, 여기서는 그리기만 한다.
+// 국정 상황판 · 선거 후 시장 — 화면 (의존성 0). 계산은 scripts/elections/build.mjs 가 끝내 두고, 여기서는 그리기만 한다.
 import { countUp } from '/motion/motion.js?v=1';
+import { academic } from './academic.js?v=1';
+let AC = null; // 학술 활용(인용·내려받기·그림 저장)
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -282,7 +284,7 @@ function basis() {
   $('#elBasis').innerHTML = `<span>${a.name} <b>${ymd(a.first, true)}~${ymd(a.last, true)}</b></span><span>평소 비교 <b>${a.base.n.toLocaleString('ko-KR')}일</b></span><span>선거 <b>${pool().length}번</b></span><span>계산 ${ymd(D.asOf.slice(0, 10), true)}</span>`;
 }
 function render() {
-  fixSel(); controls(); basis(); kpis(); pathChart(); card(); ratioChart(); table(); writeURL();
+  fixSel(); controls(); basis(); kpis(); pathChart(); card(); ratioChart(); table(); writeURL(); AC?.paint();
 }
 
 /* ── 모듈 페이지 공통: 테마 · 전체 메뉴 ── */
@@ -308,7 +310,9 @@ function shell() {
     $('#elKpis').innerHTML = `<p class="el-pm">자료를 불러오지 못했습니다. ${esc(e.message)}</p>`;
     return;
   }
-  readURL(); method(); render();
+  readURL(); method();
+  AC = academic({ getD: () => D, getS: () => S, A, sel, label: () => `선거 후 시장 — ${A().name}` });
+  render();
   let w0 = 0;
   new ResizeObserver(() => { const w = $('#elPath').clientWidth; if (Math.abs(w - w0) > 8) { w0 = w; pathChart(); ratioChart(); } }).observe($('#elPath'));
 })();

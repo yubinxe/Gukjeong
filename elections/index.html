@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>선거 후 시장 — 선거 뒤 코스피·환율 변동성 · 국정 한눈에</title>
-<meta name="description" content="1992년 이후 대통령·국회의원·전국동시지방선거 26번을 두고, 투표 전날 종가를 100으로 놓은 코스피·원달러 경로와 선거 뒤 변동성을 평시 분포와 견주어 보는 국정 한눈에의 분석 화면.">
-<meta property="og:title" content="선거 후 시장 — 국정 한눈에">
+<title>선거 후 시장 — 선거 뒤 코스피·환율 변동성 · 국정 상황판</title>
+<meta name="description" content="1992년 이후 대통령·국회의원·전국동시지방선거 26번을 두고, 투표 전날 종가를 100으로 놓은 코스피·원달러 경로와 선거 뒤 변동성을 평시 분포와 견주어 보는 국정 상황판의 분석 화면.">
+<meta property="og:title" content="선거 후 시장 — 국정 상황판">
 <meta property="og:description" content="선거가 끝난 뒤, 시장은 평소보다 더 흔들렸나. 1992년 이후 26번의 선거를 같은 잣대로.">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="https://gukjeong-hannune.vercel.app/og/elections.png">
@@ -38,7 +38,7 @@
   <div class="bar-in">
     <div class="brand">
       <span class="mark" aria-hidden="true"></span>
-      <h1><a href="/" class="home-link" title="처음 화면으로">국정 한눈에</a></h1>
+      <h1><a href="/" class="home-link" title="처음 화면으로">국정 상황판</a></h1>
       <span class="brand-sub">선거 후 시장 · 1992년 이후 전국 단위 선거 26번</span>
     </div>
     <button type="button" class="theme-btn" id="themeBtn" aria-label="화면 테마 전환">어둡게</button>
@@ -77,6 +77,7 @@
       <div class="el-ctl"><span class="el-ctl-k" id="elHK">기간</span><div class="el-seg" id="elH" role="radiogroup" aria-labelledby="elHK"><button type="button" role="radio" aria-checked="true" data-v="60">60거래일</button><button type="button" role="radio" aria-checked="false" data-v="120">120거래일</button></div></div>
     </div>
     <p class="el-basis" id="elBasis"></p>
+    <div class="el-acad" id="elAcad" aria-label="학술 활용"></div>
   </header>
 
   <section class="el-kpis" id="elKpis" aria-label="요약"></section>
@@ -84,13 +85,15 @@
 
   <section class="el-panel el-path-p" aria-labelledby="elPathH">
     <header class="el-ph">
-      <div><h3 id="elPathH">투표 전날 = 100으로 본 경로</h3><p class="el-pm" id="elPathM"></p></div>
+      <div><h3 id="elPathH"><span class="el-no">그림 1</span>투표 전날 = 100으로 본 경로</h3><p class="el-pm" id="elPathM"></p></div>
       <ul class="el-legend" id="elLegend" aria-label="범례"></ul>
     </header>
     <div class="el-path-grid">
       <figure class="el-fig">
         <div class="el-chart" id="elPath" role="img" aria-describedby="elPathDesc"></div>
         <figcaption class="visually-hidden" id="elPathDesc"></figcaption>
+        <p class="el-src" id="elPathSrc"></p>
+        <div class="el-figtools" data-fig="elPath"></div>
       </figure>
       <aside class="el-card" id="elCard" aria-live="polite"></aside>
     </div>
@@ -98,19 +101,31 @@
 
   <section class="el-panel" aria-labelledby="elRatioH">
     <header class="el-ph">
-      <div><h3 id="elRatioH">선거 뒤 20거래일 변동성 ÷ 선거 전 20거래일</h3><p class="el-pm">1보다 크면 선거 뒤가 더 출렁였다는 뜻. 띠는 같은 계산을 모든 거래일에 했을 때의 평소 범위입니다.</p></div>
+      <div><h3 id="elRatioH"><span class="el-no">그림 2</span>선거 뒤 20거래일 변동성 ÷ 선거 전 20거래일</h3><p class="el-pm">1보다 크면 선거 뒤가 더 출렁였다는 뜻. 띠는 같은 계산을 모든 거래일에 했을 때의 평소 범위입니다.</p></div>
     </header>
     <div class="el-chart el-ratio" id="elRatio"></div>
+    <p class="el-src" id="elRatioSrc"></p>
+    <div class="el-figtools" data-fig="elRatio"></div>
   </section>
 
   <section class="el-panel" aria-labelledby="elTableH">
-    <header class="el-ph"><div><h3 id="elTableH">선거별 수치</h3><p class="el-pm" id="elTableM"></p></div></header>
+    <header class="el-ph"><div><h3 id="elTableH"><span class="el-no">표 1</span>선거별 수치</h3><p class="el-pm" id="elTableM"></p></div></header>
     <div class="el-tablewrap" id="elTableWrap" tabindex="0" role="region" aria-labelledby="elTableH"></div>
+    <p class="el-src" id="elTableSrc"></p>
+    <div class="el-figtools" data-fig="elTable"></div>
+  </section>
+
+  <section class="el-panel el-data" aria-labelledby="elDataH">
+    <header class="el-ph"><div><h3 id="elDataH">자료 내려받기 · 변수 설명</h3><p class="el-pm">수업·논문에서 다시 계산할 수 있게 화면의 수치를 그대로 내려받습니다. 원자료(일별 지수) 전체는 원천의 이용 조건 때문에 싣지 않으며, 다시 받는 명령은 '자료와 방법'에 있습니다.</p></div></header>
+    <div class="el-dl" id="elDl"></div>
+    <div class="el-tablewrap" tabindex="0" role="region" aria-label="변수 설명"><table class="el-table el-codebook" id="elCodebook"></table></div>
   </section>
 
   <section class="el-method" aria-labelledby="elMethH">
     <h3 id="elMethH">자료와 방법</h3>
     <div id="elMethod"></div>
+    <h4 class="el-refh">참고문헌</h4>
+    <ol class="el-refs" id="elRefs"></ol>
   </section>
 </main>
 

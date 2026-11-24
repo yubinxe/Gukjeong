@@ -79,7 +79,10 @@ test("추이 차트: app.js bindMline 과 같은 표지, 폭에 맞춘 그림판
 test("운영 원본 2-9-1 통합: 모든 기준 표지가 정확히 한 번 · 두 번 돌려도 같다", async () => {
   const [html, js, css] = await Promise.all([prod("index.html"), prod("app.js"), prod("style.css")]);
   const a = patchIndex(html), b = patchApp(js), c = patchStyle(css);
-  assert.equal(b.changes.length, APP_PATCHES.length, "app.js 고리 전부");
+  assert.equal(b.changes.length, APP_PATCHES.length + 1, "app.js 고리 전부 + 이름 변경");
+  assert.ok(!b.js.includes("국정 한눈에") && b.js.includes("[국정 상황판]"), "복사 문구 이름");
+  assert.match(a.html, /<title>국정 상황판<\/title>/);
+  assert.match(a.html, /국정 상황판은 정부·대통령실과 관계없는/);
   assert.equal(c.changes.length, 1);
   assert.match(a.html, /<link rel="stylesheet" href="\/core\/core\.css\?v=1">/);
   assert.match(a.html, /<script type="module" src="\/core\/core\.js\?v=1"><\/script>/);

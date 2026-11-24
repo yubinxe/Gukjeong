@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>공직자 재산 동향 — 국회의원 부동산 신고 지형 · 국정 한눈에</title>
-<meta name="description" content="국회의원 재산공개 원문을 정규화해 부동산 신고가액의 지역 분포, 공개 시점별 변화, 국회 대수별 구성 변화를 지도와 표로 보여 주는 국정 한눈에의 분석 화면.">
-<meta property="og:title" content="공직자 재산 동향 — 국정 한눈에">
+<title>공직자 재산 동향 — 국회의원 부동산 신고 지형 · 국정 상황판</title>
+<meta name="description" content="국회의원 재산공개 원문을 정규화해 부동산 신고가액의 지역 분포, 공개 시점별 변화, 국회 대수별 구성 변화를 지도와 표로 보여 주는 국정 상황판의 분석 화면.">
+<meta property="og:title" content="공직자 재산 동향 — 국정 상황판">
 <meta property="og:description" content="국회의원이 신고한 부동산은 어디에, 얼마나, 어떻게 바뀌었나.">
 <meta property="og:image" content="https://gukjeong-hannune.vercel.app/og/officials.png">
 <meta property="og:image:width" content="1200">
@@ -30,6 +30,7 @@
   try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
 </script>
 <script type="module" src="/motion/motion.js?v=1"></script>
+<script type="module" src="/cite/auto.js?v=1"></script>
 <script type="module" src="officials.js?v=1"></script>
 </head>
 <body class="of-page">
@@ -39,7 +40,7 @@
   <div class="bar-in">
     <div class="brand">
       <span class="mark" aria-hidden="true"></span>
-      <h1><a href="/" class="home-link" title="처음 화면으로">국정 한눈에</a></h1>
+      <h1><a href="/" class="home-link" title="처음 화면으로">국정 상황판</a></h1>
       <span class="brand-sub">공직자 재산 동향 · 재산공개 원문 기반 분석</span>
     </div>
     <button type="button" class="theme-btn" id="themeBtn" aria-label="화면 테마 전환">어둡게</button>

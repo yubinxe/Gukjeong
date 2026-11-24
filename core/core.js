@@ -1,4 +1,4 @@
-// 국정 한눈에 · 공용 계층 (의존성 0) — 자동 갱신 상태 · 신규 기사 · 읽던 자리 지키기 · 반응형 추이 차트
+// 국정 상황판 · 공용 계층 (의존성 0) — 자동 갱신 상태 · 신규 기사 · 읽던 자리 지키기 · 반응형 추이 차트
 // app.js 는 통합 스크립트가 꽂은 짧은 고리(window.__gk*)와 'gk:data' 사건으로만 이 파일과 만난다. 이 파일이 없으면 app.js 는 원래대로 돈다.
 import { newArticles, snapshotOf, statusOf, multiLineSVG, seriesFromData } from './lib.mjs?v=1';
 
@@ -111,8 +111,28 @@ function watch() {
   if (heat) new MutationObserver(() => { if (heat.scrollWidth > heat.clientWidth + 4) heat.scrollLeft = heat.scrollWidth; }).observe(heat, { childList: true });
 }
 
+/* ── 학술 활용: 지금 보기와 수집 시각으로 인용 정보를 만든다(바닥글 '이 화면 인용하기') ── */
+window.__citeMeta = () => {
+  const tab = document.querySelector('nav.views [aria-selected="true"]')?.textContent?.trim() || '종합 상황판';
+  const q = new URLSearchParams(location.search);
+  const kw = q.get('q') || q.get('kw');
+  // 종합 수집 자료(보도·거시)로 그리는 보기만 그 수집 시각을 자료 기준으로 쓴다. 해외·시장·부동산은 따로 받는 자료라 화면의 기준 표기를 그대로 옮긴다.
+  const v = q.get('v') || 'home';
+  const own = { global: null, street: 'stMeta', realty: 'reMeta' };
+  const shown = cur?.stale ? '대체 자료' : '보도 수집 시각';
+  if (v in own) {
+    const label = own[v] && document.getElementById(own[v])?.textContent?.trim();
+    return { title: tab, kind: 'webpage', url: location.href, note: label ? `실시간 화면 — 화면 표기 '${label}'` : '실시간 화면 — 열람 시점의 자료' };
+  }
+  return {
+    title: tab, sub: kw ? `검색: ${kw}` : undefined, kind: 'webpage', url: location.href,
+    issued: cur?.generatedAt, note: cur?.generatedAt ? `실시간 화면 — 자료 기준 시각은 ${shown}` : undefined,
+  };
+};
+
 if (!window.__gkInit) {
   window.__gkInit = true;
+  import('/cite/auto.js?v=1').catch(() => {}); // 인용 모듈이 없는 배포에서도 화면은 그대로
   window.__gkKeep = keep;
   window.__gkMultiLine = mline;
   watch();

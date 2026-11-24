@@ -39,12 +39,12 @@ export function cards(D) {
   const share = Math.round(g.p1 * 100);
   const siteOG = page(1200, 630, `<div class="frame"><div class="top"></div>
     <div style="flex:1;padding:72px 84px 64px;display:flex;flex-direction:column">
-      <div class="brand" style="font-size:22px;color:${C.green}"><i></i>국정 한눈에</div>
+      <div class="brand" style="font-size:22px;color:${C.green}"><i></i>국정 상황판</div>
       <h1 class="serif" style="margin-top:auto;font-size:76px;line-height:1.2;letter-spacing:-.03em;font-weight:700">국정과 경제를<br>한 화면에서</h1>
       <div class="rule" style="margin:34px 0 22px;width:180px"></div>
       <p style="font-size:24px;color:${C.ink2};letter-spacing:-.01em">대통령 동정 · 정부 정책 · 국회 · 시장 · 부동산 · 정부기관 공개 정보 연계</p>
     </div></div>`);
-  const kicker = (t) => `<div class="brand" style="font-size:20px;color:${C.green}"><i></i>국정 한눈에 <span style="color:${C.muted};font-weight:500;margin-left:6px">${t}</span></div>`;
+  const kicker = (t) => `<div class="brand" style="font-size:20px;color:${C.green}"><i></i>국정 상황판 <span style="color:${C.muted};font-weight:500;margin-left:6px">${t}</span></div>`;
   const briefOG = page(1200, 630, `<div class="frame"><div class="top"></div><div style="flex:1;padding:72px 84px 64px;display:flex;flex-direction:column">${kicker("오늘의 브리핑")}
       <h1 class="serif" style="margin-top:auto;font-size:70px;line-height:1.22;letter-spacing:-.03em">오늘 나온 기사로<br>오늘을 정리합니다</h1>
       <div class="rule" style="margin:32px 0 20px;width:180px"></div><p style="font-size:24px;color:${C.ink2}">요약 · 해석 · 묻고 답하기 — 모든 문장에 출처 기사</p></div></div>`);

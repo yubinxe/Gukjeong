@@ -1,4 +1,4 @@
-// 국정 한눈에 · 오늘의 브리핑 화면 — 채널(소식 흐름) + 브리핑 도우미(대화). 의존성 0.
+// 국정 상황판 · 오늘의 브리핑 화면 — 채널(소식 흐름) + 브리핑 도우미(대화). 의존성 0.
 // 사실 층은 언제나 그린다. AI 해석이 늦거나 없으면 사실만으로 완결되는 화면이어야 한다.
 import { composeBriefing, kstParts } from "./lib/compose.mjs";
 
@@ -134,7 +134,7 @@ function render(data) {
     ...tail.length ? [sep("정책 · 세계 · 지표"), ...tail] : [], aiNote(),
   ].join("") : `<div class="bf-empty"><b>아직 묶인 사안이 없습니다.</b> 수집이 갱신되면 이 자리에 오늘의 소식이 쌓입니다.</div>`;
   feed.setAttribute("aria-busy", "false");
-  document.title = `오늘의 브리핑 · ${dayFmt.format(new Date(b.basis))} — 국정 한눈에`;
+  document.title = `오늘의 브리핑 · ${dayFmt.format(new Date(b.basis))} — 국정 상황판`;
 
   restoreChat();
   renderSuggestions();
@@ -452,7 +452,7 @@ $("#chatNew").onclick = () => { if (S.ctrl) S.ctrl.abort(); S.msgs = []; persist
 $("#chatClose").onclick = closeChat;
 $("#askBar").onclick = () => openChat({ focus: true });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && chat.classList.contains("is-open")) closeChat(); });
-$("#shareBtn").onclick = () => share({ title: "오늘의 브리핑 — 국정 한눈에", text: S.ins?.lead || S.b?.stories[0]?.title || "", url: `${location.origin}/briefing/` });
+$("#shareBtn").onclick = () => share({ title: "오늘의 브리핑 — 국정 상황판", text: S.ins?.lead || S.b?.stories[0]?.title || "", url: `${location.origin}/briefing/` });
 $("#bfPin").onclick = (e) => { e.preventDefault(); jump("lead"); };
 $("#themeBtn").onclick = toggleTheme;
 const sheet = $("#moreSheet");

@@ -1,4 +1,4 @@
-// 국정 한눈에 3.0 · 전망 인텔리전스 화면 (의존성 0)
+// 국정 상황판 3.0 · 전망 인텔리전스 화면 (의존성 0)
 import { KIND_LABEL, PROB_POLICY, rankIssues, replayView, evidenceStats, flowResidual } from "./lib/engine.mjs";
 
 const STATIC = ["nps-rebalancing-2026"]; // API 가 없을 때(정적 배포·로컬) 읽을 파일
@@ -19,7 +19,7 @@ async function loadOne(id) {
 }
 
 function renderList(list) {
-  document.title = "오늘의 분기점 — 국정 한눈에";
+  document.title = "오늘의 분기점 — 국정 상황판";
   $("#app").innerHTML = `<div class="wrap forks">
     <p class="kicker">오늘의 분기점</p>
     <h1>지금 해석이 필요한 국정·시장 사건</h1>
@@ -80,7 +80,7 @@ function renderDetail(doc, asOf) {
   const i = doc.issue, st = doc.stats || evidenceStats(doc);
   const rp = asOf ? replayView(doc, asOf) : null;
   const evs = rp ? rp.evidence : doc.evidence, seen = new Set(evs.map((e) => e.id));
-  document.title = `${i.title} — 국정 한눈에`;
+  document.title = `${i.title} — 국정 상황판`;
   const nav = [["A", "핵심 판단", "verdict"], ["B", "확정된 사실", "facts"], ["C", "작동 기전", "mech"], ["D", "시나리오", "scn"], ["E", "컨센서스", "cons"], ["F", "반대 가설", "hyp"], ["G", "판단 변경 지표", "watch"], ["H", "사후 검증", "verify"]];
   const scn = doc.scenarios.map((s) => `<article class="scn ${s.scenario_type}"><div class="type">${s.scenario_type}</div><h3>${esc(s.summary)}</h3>
     <h4>전제</h4><ul>${s.assumptions.map((a) => `<li>${esc(a)}</li>`).join("")}</ul>

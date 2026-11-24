@@ -1,4 +1,4 @@
-/* 국정 한눈에 · 선거 후 시장 — 상아 지면 위의 사건 연구. 강조 한 줄(고동/금) + 회색 맥락 + 숲빛 '평소 범위' 띠.
+/* 국정 상황판 · 선거 후 시장 — 상아 지면 위의 사건 연구. 강조 한 줄(고동/금) + 회색 맥락 + 숲빛 '평소 범위' 띠.
    색은 정체성(고른 선거)과 범위(평시 분포)에만 쓴다. 숫자와 이름은 잉크색. 상승·하락은 사이트 관례(--up 적 / --down 청)로 글자에만. */
 
 .el-page {
@@ -196,4 +196,51 @@
   .el-verdict:empty { min-height: 130px; }
   #elPath:empty { min-height: 300px; }
   #elRatio:empty { min-height: 1230px; }
+}
+
+/* ── 학술 활용: 그림·표 번호 · 출처 주기 · 저장 · 자료 · 참고문헌 ── */
+.el-no { display: inline-block; margin-right: 10px; padding-right: 10px; border-right: 1px solid var(--line); font-family: var(--font); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; color: var(--brass); vertical-align: 2px; }
+.el-src { font-size: 11.5px; line-height: 1.6; color: var(--muted); margin-top: 8px !important; max-width: 1000px; }
+.el-figtools { display: flex; flex-wrap: wrap; gap: 6px; }
+.el-figtools .ct-open, .el-acad .ct-open { height: 28px; font-size: 12px; }
+.el-acad { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.el-acad .el-jump { display: inline-flex; align-items: center; text-decoration: none; }
+.el-printhead { display: none; }
+.el-files { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.el-files li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line-2); font-size: 13px; color: var(--text-2); }
+.el-codebook { min-width: 720px; }
+.el-codebook th, .el-codebook td { text-align: left; white-space: normal; vertical-align: top; }
+.el-codebook tbody th { width: 150px; }
+.el-codebook code { font-size: 12px; background: var(--bg); border: 1px solid var(--line-2); padding: 0 4px; white-space: nowrap; }
+.el-codebook td:nth-child(2) { width: 140px; white-space: nowrap; }
+.el-refh { margin: 22px 0 8px; font-family: var(--serif); font-size: 16px; color: var(--text); }
+.el-refs { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+.el-refs li { padding-left: 2em; text-indent: -2em; font-size: 12.5px; line-height: 1.65; color: var(--text-2); overflow-wrap: anywhere; } /* APA 내어쓰기 */
+.el-refs a { color: var(--text-2); }
+@media (max-width: 760px) {
+  .el-files { grid-template-columns: 1fr; }
+  .el-src, .el-figtools { padding: 0 0; }
+}
+
+/* ── 인쇄(A4): 탐색·조작 단추를 걷고 그림·표·방법만. 머리에 주소와 자료 기준 ── */
+@media print {
+  @page { size: A4; margin: 14mm 12mm 16mm; }
+  .el-page { background: #fff; }
+  header.bar, nav.views, nav.tabbar, dialog, .el-controls, .el-figtools, .el-acad, .el-card .nav, .el-tip, .skip, .el-dl { display: none !important; }
+  .el-printhead { display: block; font-size: 9pt; color: #555; border-bottom: 1px solid #999; padding-bottom: 4px; margin-bottom: 6px; }
+  .el { max-width: none; padding: 0; gap: 10px; }
+  .el-head { grid-template-columns: 1fr; border-bottom-width: 1px; }
+  .el-title h2 { font-size: 18pt; }
+  .el-panel { border: 0; padding: 0; break-inside: avoid; }
+  .el-path-grid { grid-template-columns: minmax(0, 1fr) 190px; }
+  .el-kpis { break-inside: avoid; }
+  .el-kpi .v { font-size: 24pt; }
+  .el-tablewrap { overflow: visible; }
+  .el-table { min-width: 0; font-size: 7.5pt; }
+  .el-table th, .el-table td { padding: 3px 4px; }
+  .el-table th:first-child, .el-table td:first-child { position: static; }
+  .el-codebook { font-size: 8pt; }
+  .el-method, .el-refs li { font-size: 9pt; }
+  .foot { font-size: 8pt; }
+  a[href^="http"]::after { content: ""; }
 }
