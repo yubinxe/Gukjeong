@@ -1,0 +1,246 @@
+/* 국정 상황판 · 선거 후 시장 — 상아 지면 위의 사건 연구. 강조 한 줄(고동/금) + 회색 맥락 + 숲빛 '평소 범위' 띠.
+   색은 정체성(고른 선거)과 범위(평시 분포)에만 쓴다. 숫자와 이름은 잉크색. 상승·하락은 사이트 관례(--up 적 / --down 청)로 글자에만. */
+
+.el-page {
+  --el-hi: #8a6a35;            /* 고른 선거: 고동(본문 대비 4.9:1) */
+  --el-mid: var(--text);       /* 묶음 중앙값: 잉크 */
+  --el-ctx: #8e8a7c;           /* 나머지 선거: 회색 */
+  --el-band: color-mix(in srgb, #2f5643 9%, transparent);
+  --el-band2: color-mix(in srgb, #2f5643 17%, transparent);
+  --el-grid: var(--line-2);
+  background: var(--bg);
+}
+:root[data-theme="dark"] .el-page { --el-hi: #dcbd7c; --el-ctx: #7d8279; --el-band: color-mix(in srgb, #7fae84 10%, transparent); --el-band2: color-mix(in srgb, #7fae84 19%, transparent); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .el-page { --el-hi: #dcbd7c; --el-ctx: #7d8279; --el-band: color-mix(in srgb, #7fae84 10%, transparent); --el-band2: color-mix(in srgb, #7fae84 19%, transparent); }
+}
+
+.el { max-width: 1280px; margin: 0 auto; padding: 18px 20px 48px; display: grid; gap: 20px; }
+.el h2, .el h3, .el p { margin: 0; }
+
+/* ── 머리 ── */
+.el-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 28px; align-items: end; padding: 6px 0 16px; border-bottom: 3px double var(--brass); }
+.el-kicker { font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--brass); }
+.el-title h2 { font-family: var(--serif); font-size: 30px; line-height: 1.28; letter-spacing: -.02em; margin: 4px 0 8px; text-wrap: balance; }
+.el-sub { font-size: 14px; line-height: 1.7; color: var(--text-2); max-width: 680px; text-wrap: pretty; }
+.el-controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: flex-end; }
+.el-ctl { display: flex; align-items: center; gap: 8px; }
+.el-ctl-k { font-size: 12px; color: var(--muted); font-weight: 600; }
+.el-seg { display: inline-flex; border: 1px solid var(--line); background: var(--panel); }
+.el-seg button { height: 32px; padding: 0 12px; border: 0; border-left: 1px solid var(--line-2); background: none; color: var(--text-2); font: 600 13px/1 var(--font); cursor: pointer; white-space: nowrap; transition: background-color var(--mo-micro, 140ms), color var(--mo-micro, 140ms); }
+.el-seg button:first-child { border-left: 0; }
+.el-seg button[aria-checked="true"] { background: var(--navy); color: var(--panel); }
+.el-seg button:not([aria-checked="true"]):hover { color: var(--text); background: var(--bg); }
+.el-seg button:focus-visible { outline: 2px solid var(--brass); outline-offset: -2px; }
+.el-basis { grid-column: 1 / -1; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums; }
+.el-basis b { color: var(--text-2); font-weight: 600; }
+
+/* ── 요약 네 칸: 카드 대신 세로 괘선 ── */
+.el-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.el-kpi { padding: 16px 20px 18px; display: grid; gap: 6px; align-content: start; }
+.el-kpi + .el-kpi { border-left: 1px solid var(--line-2); }
+.el-kpi dt { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.el-kpi dd { margin: 0; }
+.el-kpi .v { font-family: var(--numeral); font-size: 40px; font-weight: 600; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--text); }
+.el-kpi .v small { font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--muted); margin-left: 3px; letter-spacing: 0; }
+.el-kpi .s { font-size: 12.5px; line-height: 1.55; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.el-verdict { font-family: var(--serif); font-size: 17px; line-height: 1.75; color: var(--text); max-width: 900px; text-wrap: pretty; }
+.el-verdict em { font-style: normal; border-bottom: 1px solid var(--brass); }
+
+/* ── 패널 ── */
+.el-panel { background: var(--panel); border: 1px solid var(--line); padding: 18px 20px 20px; display: grid; gap: 14px; min-width: 0; }
+.el-ph { display: flex; gap: 12px 24px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid var(--line-2); }
+.el-ph h3 { font-family: var(--serif); font-size: 19px; letter-spacing: -.01em; }
+.el-pm { font-size: 12.5px; color: var(--muted); margin-top: 4px !important; line-height: 1.6; max-width: 720px; }
+.el-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--text-2); }
+.el-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.el-legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; }
+.el-legend i.hi { border-color: var(--el-hi); border-top-width: 3px; }
+.el-legend i.mid { border-color: var(--el-mid); }
+.el-legend i.ctx { border-color: var(--el-ctx); border-top-width: 1.5px; }
+.el-legend i.band { height: 10px; border: 0; background: linear-gradient(var(--el-band2), var(--el-band2)) center / 100% 50% no-repeat, var(--el-band); }
+
+.el-path-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 22px; align-items: start; }
+.el-fig { margin: 0; min-width: 0; }
+.el-chart { position: relative; min-width: 0; }
+.el-chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.el-chart text { font-family: var(--font); fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.el-chart .grid { stroke: var(--el-grid); stroke-width: 1; }
+.el-chart .base { stroke: var(--line); stroke-width: 1.2; }
+.el-chart .zero { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.el-chart .zero-t { fill: var(--text-2); font-weight: 700; }
+.el-chart .band { fill: var(--el-band); }
+.el-chart .band2 { fill: var(--el-band2); }
+.el-chart .bmed { stroke: color-mix(in srgb, var(--text) 35%, transparent); stroke-width: 1; stroke-dasharray: 4 4; fill: none; }
+.el-chart .ctx { stroke: var(--el-ctx); stroke-width: 1.25; fill: none; opacity: .55; transition: opacity var(--mo-micro, 140ms), stroke-width var(--mo-micro, 140ms); }
+.el-chart .ctx.hov { opacity: 1; stroke-width: 2; stroke: var(--text-2); }
+.el-chart .mid { stroke: var(--el-mid); stroke-width: 2; fill: none; }
+.el-chart .hi { stroke: var(--el-hi); stroke-width: 2.75; fill: none; stroke-linejoin: round; }
+.el-chart .hi-dot { fill: var(--el-hi); stroke: var(--panel); stroke-width: 2; }
+.el-chart .lab { font-size: 12.5px; font-weight: 700; fill: var(--text); }
+.el-chart .lab.hi-t { fill: var(--el-hi); }
+.el-chart .lab small, .el-chart .lab .v { font-weight: 800; }
+.el-chart .cross { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 2 3; }
+.el-chart .hit { fill: transparent; cursor: crosshair; }
+
+/* 고른 선거 해설 */
+.el-card { border-left: 2px solid var(--el-hi); padding: 2px 0 2px 16px; display: grid; gap: 10px; font-size: 13px; color: var(--text-2); }
+.el-card h4 { margin: 0; font-family: var(--serif); font-size: 18px; color: var(--text); line-height: 1.35; }
+.el-card .when { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.el-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-variant-numeric: tabular-nums; }
+.el-card dt { color: var(--muted); font-size: 12.5px; }
+.el-card dd { margin: 0; text-align: right; font-weight: 700; color: var(--text); }
+.el-card .note { font-size: 12.5px; line-height: 1.6; color: var(--text-2); padding-top: 8px; border-top: 1px solid var(--line-2); }
+.el-card .nav { display: flex; gap: 8px; }
+.el-card .nav button { flex: 1; height: 32px; border: 1px solid var(--line); background: none; color: var(--text-2); font: 600 12.5px/1 var(--font); cursor: pointer; }
+.el-card .nav button:hover { background: var(--bg); color: var(--text); }
+.el-card .nav button:disabled { opacity: .45; cursor: default; }
+.el-card .partial { font-size: 12px; color: var(--brass); font-weight: 600; }
+.up { color: var(--up); } .down { color: var(--down); }
+
+/* 변동성 비율: 선거마다 한 줄, 1에서 뻗는 막대 + 점 */
+.el-ratio svg .row-hit { fill: transparent; cursor: pointer; }
+.el-ratio svg .row-sel { fill: color-mix(in srgb, var(--el-hi) 11%, transparent); }
+.el-ratio svg .stem { stroke: var(--el-ctx); stroke-width: 2; }
+.el-ratio svg .dot { fill: var(--panel); stroke: var(--text); stroke-width: 2; }
+.el-ratio svg .dot.out { fill: var(--text); }
+.el-ratio svg .sel .stem { stroke: var(--el-hi); }
+.el-ratio svg .sel .dot { stroke: var(--el-hi); fill: var(--el-hi); }
+.el-ratio svg .name { fill: var(--text); font-size: 12.5px; font-weight: 600; }
+.el-ratio svg .name.kind { fill: var(--muted); font-weight: 500; }
+.el-ratio svg .val { fill: var(--text); font-weight: 700; }
+.el-ratio svg .val small { fill: var(--muted); }
+.el-ratio svg .pct { fill: var(--muted); font-size: 11.5px; }
+.el-ratio svg .pct.out { fill: var(--brass); font-weight: 700; }
+.el-ratio svg .one { stroke: var(--text-2); stroke-width: 1.2; }
+.el-ratio svg .bmed { stroke: color-mix(in srgb, var(--text) 40%, transparent); stroke-dasharray: 4 4; }
+.el-ratio svg .na { fill: var(--faint); font-size: 12px; }
+.el-ratio svg .grid { stroke: var(--line-2); }
+
+/* 표 */
+.el-tablewrap { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.el-tablewrap:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.el-table { width: 100%; min-width: 980px; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.el-table th, .el-table td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+.el-table thead th { font-size: 11.5px; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--line); vertical-align: bottom; white-space: normal; line-height: 1.35; }
+.el-table th:first-child, .el-table td:first-child { text-align: left; position: sticky; left: 0; background: var(--panel); z-index: 1; }
+.el-table tbody th { font-weight: 600; color: var(--text); }
+.el-table tbody th button { all: unset; cursor: pointer; }
+.el-table tbody th button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.el-table tbody th button:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.el-table tbody th small { display: block; font-size: 11.5px; color: var(--muted); font-weight: 500; }
+.el-table tr[aria-selected="true"] th, .el-table tr[aria-selected="true"] td { background: color-mix(in srgb, var(--el-hi) 10%, var(--panel)); }
+.el-table td.na { color: var(--faint); }
+.el-table td .p { display: block; font-size: 11px; color: var(--muted); font-weight: 500; }
+.el-table td .p.out { color: var(--brass); font-weight: 700; }
+.el-table td.note { text-align: left; white-space: normal; min-width: 220px; font-size: 12px; color: var(--text-2); line-height: 1.5; }
+
+/* 방법 */
+.el-method { font-size: 13px; line-height: 1.8; color: var(--text-2); max-width: 1000px; }
+.el-method h3 { font-family: var(--serif); font-size: 19px; margin-bottom: 10px; color: var(--text); }
+.el-method dl { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 10px 20px; margin: 0; }
+.el-method dt { font-weight: 700; color: var(--text); }
+.el-method dd { margin: 0; }
+.el-method code { font-size: 12px; background: var(--panel); border: 1px solid var(--line-2); padding: 0 4px; }
+
+/* 툴팁 */
+.el-tip { position: fixed; z-index: 40; pointer-events: none; min-width: 180px; max-width: 280px; padding: 10px 12px; background: var(--panel); color: var(--text); border: 1px solid var(--line); box-shadow: 0 12px 28px -18px rgba(10, 16, 12, .55); font-size: 12.5px; line-height: 1.55; font-variant-numeric: tabular-nums; }
+.el-tip b { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+.el-tip .r { display: flex; justify-content: space-between; gap: 14px; }
+.el-tip .r i { display: inline-block; width: 12px; height: 0; border-top: 2px solid; margin-right: 6px; vertical-align: middle; }
+.el-tip .r span { color: var(--text-2); }
+.el-tip .r strong { font-weight: 700; }
+
+@media (max-width: 1100px) {
+  .el-head { grid-template-columns: 1fr; }
+  .el-controls { justify-content: flex-start; }
+  .el-path-grid { grid-template-columns: 1fr; }
+  .el-card { border-left: 0; border-top: 2px solid var(--el-hi); padding: 12px 0 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; }
+  .el-card > :is(h4, .when, .note, .nav, .partial) { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  .el { padding: 12px 0 calc(var(--tab-h, 58px) + 28px); gap: 16px; }
+  .el-head { grid-template-columns: 1fr; padding: 0 16px 12px; }
+  .el-title h2 { font-size: 23px; }
+  .el-sub { font-size: 13.5px; }
+  .el-controls { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px; }
+  .el-controls::-webkit-scrollbar { display: none; }
+  .el-ctl { flex: none; }
+  .el-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 16px; }
+  .el-kpi { padding: 14px 12px 14px 0; }
+  .el-kpi + .el-kpi { border-left: 0; }
+  .el-kpi:nth-child(even) { border-left: 1px solid var(--line-2); padding-left: 14px; }
+  .el-kpi:nth-child(n + 3) { border-top: 1px solid var(--line-2); }
+  .el-kpi .v { font-size: 32px; }
+  .el-verdict { font-size: 15.5px; padding: 0 16px; }
+  .el-panel { border-left: 0; border-right: 0; padding: 16px; }
+  .el-card { grid-template-columns: 1fr; }
+  .el-method { padding: 0 16px; }
+  .el-method dl { grid-template-columns: 1fr; gap: 2px; }
+  .el-method dd { margin-bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .el-chart .ctx { transition: none; } }
+
+/* 자료가 오기 전 자리를 미리 잡아 밀림(CLS)을 막는다 — 그려진 뒤의 높이와 같게 */
+.el-basis:empty { min-height: 18px; }
+.el-kpis:empty { min-height: 124px; }
+.el-verdict:empty { min-height: 60px; }
+#elPath:empty { min-height: 380px; }
+#elCard:empty { min-height: 330px; }
+.el-legend:empty { min-height: 18px; }
+#elRatio:empty { min-height: 822px; }
+#elTableWrap:empty { min-height: 1500px; }
+@media (max-width: 1100px) { #elCard:empty { min-height: 260px; } }
+@media (max-width: 760px) {
+  .el-kpis:empty { min-height: 230px; }
+  .el-verdict:empty { min-height: 130px; }
+  #elPath:empty { min-height: 300px; }
+  #elRatio:empty { min-height: 1230px; }
+}
+
+/* ── 학술 활용: 그림·표 번호 · 출처 주기 · 저장 · 자료 · 참고문헌 ── */
+.el-no { display: inline-block; margin-right: 10px; padding-right: 10px; border-right: 1px solid var(--line); font-family: var(--font); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; color: var(--brass); vertical-align: 2px; }
+.el-src { font-size: 11.5px; line-height: 1.6; color: var(--muted); margin-top: 8px !important; max-width: 1000px; }
+.el-figtools { display: flex; flex-wrap: wrap; gap: 6px; }
+.el-figtools .ct-open, .el-acad .ct-open { height: 28px; font-size: 12px; }
+.el-acad { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.el-acad .el-jump { display: inline-flex; align-items: center; text-decoration: none; }
+.el-printhead { display: none; }
+.el-files { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; }
+.el-files li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line-2); font-size: 13px; color: var(--text-2); }
+.el-codebook { min-width: 720px; }
+.el-codebook th, .el-codebook td { text-align: left; white-space: normal; vertical-align: top; }
+.el-codebook tbody th { width: 150px; }
+.el-codebook code { font-size: 12px; background: var(--bg); border: 1px solid var(--line-2); padding: 0 4px; white-space: nowrap; }
+.el-codebook td:nth-child(2) { width: 140px; white-space: nowrap; }
+.el-refh { margin: 22px 0 8px; font-family: var(--serif); font-size: 16px; color: var(--text); }
+.el-refs { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+.el-refs li { padding-left: 2em; text-indent: -2em; font-size: 12.5px; line-height: 1.65; color: var(--text-2); overflow-wrap: anywhere; } /* APA 내어쓰기 */
+.el-refs a { color: var(--text-2); }
+@media (max-width: 760px) {
+  .el-files { grid-template-columns: 1fr; }
+  .el-src, .el-figtools { padding: 0 0; }
+}
+
+/* ── 인쇄(A4): 탐색·조작 단추를 걷고 그림·표·방법만. 머리에 주소와 자료 기준 ── */
+@media print {
+  @page { size: A4; margin: 14mm 12mm 16mm; }
+  .el-page { background: #fff; }
+  header.bar, nav.views, nav.tabbar, dialog, .el-controls, .el-figtools, .el-acad, .el-card .nav, .el-tip, .skip, .el-dl { display: none !important; }
+  .el-printhead { display: block; font-size: 9pt; color: #555; border-bottom: 1px solid #999; padding-bottom: 4px; margin-bottom: 6px; }
+  .el { max-width: none; padding: 0; gap: 10px; }
+  .el-head { grid-template-columns: 1fr; border-bottom-width: 1px; }
+  .el-title h2 { font-size: 18pt; }
+  .el-panel { border: 0; padding: 0; break-inside: avoid; }
+  .el-path-grid { grid-template-columns: minmax(0, 1fr) 190px; }
+  .el-kpis { break-inside: avoid; }
+  .el-kpi .v { font-size: 24pt; }
+  .el-tablewrap { overflow: visible; }
+  .el-table { min-width: 0; font-size: 7.5pt; }
+  .el-table th, .el-table td { padding: 3px 4px; }
+  .el-table th:first-child, .el-table td:first-child { position: static; }
+  .el-codebook { font-size: 8pt; }
+  .el-method, .el-refs li { font-size: 9pt; }
+  .foot { font-size: 8pt; }
+  a[href^="http"]::after { content: ""; }
+}
