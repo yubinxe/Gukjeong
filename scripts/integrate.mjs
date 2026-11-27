@@ -62,6 +62,15 @@ export function patchIndex(html) {
     html = html.replace(li[1], `${li[1]}\n      <li><a href="${m.href}"><b>${m.label}</b><span>${m.sub}</span></a></li>`);
     changes.push(`위쪽 탭 줄·전체 메뉴: '${m.label}' 추가`);
   }
+  if (!html.includes('id="gfFlow"')) {
+    const atlas = must(/\n    <section class="atlas" id="atlas"[\s\S]*?\n    <\/section>\n/, html, "해외 탭 세계 권력 지형 묶음")[0];
+    let g = html.replace(atlas, "\n");
+    const head = must(/(<section id="v-global"[^>]*>\s*<header class="vh">[\s\S]*?<\/header>)/, g, "해외 탭 머리")[1];
+    g = g.replace(head, `${head}\n    <section class="gf" id="gfFlow" aria-labelledby="gf-h" aria-live="off"></section>`);
+    const tail = must(/(<div id="globalBody" class="gt-body"><\/div>)(\n  <\/section>)/, g, "해외 탭 기사 목록 끝");
+    html = g.replace(tail[0], `${tail[1]}${atlas.replace(/\n$/, "")}${tail[2]}`);
+    changes.push("해외 탭: 머리 아래 '세계 보도 흐름' 자리, 세계 권력 지형은 기사 목록 아래로");
+  }
   if (html.includes(OLD_NAME)) {
     html = rebrand(html);
     changes.push(`이름: '${OLD_NAME}' → '${NEW_NAME}'(제목·메타·머리·바닥글, 조사 맞춤)`);
@@ -128,6 +137,12 @@ export const APP_PATCHES = [
   { id: "banner", desc: "첫 화면 제목에서 취임 경과 제거(날짜만)",
     find: "$('banner-h').textContent = `${fmt.date.format(new Date())}, ${$('term').textContent}`;",
     repl: "$('banner-h').textContent = fmt.date.format(new Date()); // gk:banner" },
+  { id: "globalEvt", desc: "해외 자료를 받으면 'gk:global' 알림(세계 보도 흐름이 같은 자료를 쓴다 — 두 번 받지 않음)",
+    find: "      gstate.data = d; gstate.at = Date.now();\n      break;",
+    repl: "      gstate.data = d; gstate.at = Date.now(); window.__gkGlobal = d; dispatchEvent(new CustomEvent('gk:global', { detail: d }));\n      break;" },
+  { id: "atlasLazy", desc: "세계 권력 지형(지도)은 아래로 옮겼으므로 화면 가까이 왔을 때 불러옴",
+    find: "  if (v === 'global') { loadGlobal(); mountAtlasLazy(); }",
+    repl: "  if (v === 'global') { loadGlobal(); const at = $('atlas'); if (atlasMod || !at || !('IntersectionObserver' in window)) mountAtlasLazy(); else if (!at.__io) { at.__io = new IntersectionObserver((en) => { if (en.some((x) => x.isIntersecting)) { at.__io.disconnect(); at.__io = null; mountAtlasLazy(); } }, { rootMargin: '200px 0px' }); at.__io.observe(at); } } // gk:atlasLazy" },
   { id: "mline", desc: "부동산 추이 차트를 칸 폭에 맞춰 그림(이름표·눈금 겹침 방지)",
     find: "function multiLine(series, { W = 520, H = 230, pt = 16, pb = 40 } = {}) {",
     repl: "function multiLine(series, { W = 520, H = 230, pt = 16, pb = 40 } = {}) {\n  const gk = window.__gkMultiLine?.(series, $('reTrend')); if (gk) return gk;" },

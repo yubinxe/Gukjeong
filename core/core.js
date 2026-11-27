@@ -133,6 +133,7 @@ window.__citeMeta = () => {
 if (!window.__gkInit) {
   window.__gkInit = true;
   import('/cite/auto.js?v=1').catch(() => {}); // 인용 모듈이 없는 배포에서도 화면은 그대로
+  if (document.getElementById('gfFlow')) import('/world/flow.js?v=1').catch(() => {}); // 해외 탭: 세계 보도 흐름
   window.__gkKeep = keep;
   window.__gkMultiLine = mline;
   watch();

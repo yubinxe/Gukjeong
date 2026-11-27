@@ -68,3 +68,10 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .mline .c3 { stroke: #9fb8a6; fill: #9fb8a6; }
 }
+
+/* ── 부동산 뉴스: 띄어쓰기 없는 긴 낱말(전역 word-break: keep-all)이 칸을 밀어내던 문제 ──
+   원인: .rn-lead 가 열 폭을 정하지 않은 grid 라 가장 긴 낱말의 폭이 곧 열의 최소 폭이 된다 → 옆 칸 침범·화면 밖.
+   처방: 열 최소 폭 0 + 제목·요지는 넘칠 때만 낱말 안에서 끊는다(평소 줄바꿈은 그대로 낱말 단위). */
+.rn-lead { grid-template-columns: minmax(0, 1fr); }
+.rn-lead > *, .rn-l li, .rn-l a { min-width: 0; }
+:is(.hl, .rn-ls, .rn-lt) { overflow-wrap: anywhere; }

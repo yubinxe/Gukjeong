@@ -15,8 +15,28 @@ export const CASES = [
   { key: 'zoom200-1440', width: 720, scheme: 'light', dsf: 2 }, // 1440 화면을 200% 확대하면 CSS 폭 720
   { key: 'zoom200-768', width: 384, scheme: 'light', dsf: 2 },
 ];
-const SCOPES = { realty: ['header.bar', '#v-realty'], home: ['header.bar', 'nav.views', '#v-home'], elections: ['header.bar', 'nav.views', '#el-main'] };
-const READY = { realty: '#reTrend svg, #reTrend .empty', home: '#lead li, #top li', elections: '#elRatio svg' };
+// --wide: 실제 기기·창 크기와 윈도 배율(125·150%)까지 — 중단점 사이에서만 생기는 겹침을 잡는다
+export const WIDE = [320, 340, 360, 375, 390, 412, 430, 480, 540, 600, 640, 700, 768, 800, 820, 853, 900, 960, 1024, 1100, 1180, 1280, 1366, 1440, 1536, 1920]
+  .map((w) => ({ key: `w${w}`, width: w, scheme: 'light' }));
+// --fuzz: 부동산 자료를 극단값으로 바꿔 넣는다(자릿수 큰 값·긴 이름·띄어쓰기 없는 긴 제목) — 다음 달 자료가 와도 깨지지 않는지
+export function fuzzRealty(d) {
+  const x = structuredClone(d);
+  const big = (v) => (typeof v === 'number' ? (Math.abs(v) < 50 ? v * 7.37 : v * 13.1) : v);
+  for (const s of Object.values(x.stats || {})) {
+    if (!s || typeof s !== 'object') continue;
+    if (typeof s.value === 'number') s.value = big(s.value);
+    if (typeof s.mom === 'number') s.mom = -Math.abs(big(s.mom)) * 1.9;
+    if (typeof s.yoy === 'number') s.yoy = big(s.yoy) * 2.3;
+    if (Array.isArray(s.series)) for (const p of s.series) if (typeof p.v === 'number') p.v = big(p.v);
+    if (Array.isArray(s)) for (const r of s) { if (typeof r.v === 'number') r.v = big(r.v); if (r.name) r.name = `${r.name}특별자치도`; }
+  }
+  for (const r of x.stats?.unsoldRegions || []) { r.v = r.v * 13; r.name = `${r.name}특별자치도`; }
+  for (const sec of x.sections || []) for (const it of sec.items || []) it.title = `${it.title} ${'초장문제목띄어쓰기없는부동산기사제목'.repeat(3)}`;
+  for (const i of x.insights || []) { if (i.head) i.head += ' — 길어진 제목으로 줄바꿈 시험'; if (i.metric && typeof i.metric.v === 'number') i.metric.v = -Math.abs(big(i.metric.v)) * 3.1; }
+  return x;
+}
+const SCOPES = { realty: ['header.bar', '#v-realty'], home: ['header.bar', 'nav.views', '#v-home'], elections: ['header.bar', 'nav.views', '#el-main'], global: ['header.bar', '#v-global > header.vh', '#gfFlow', '#globalTopics', '#globalBody'] };
+const READY = { realty: '#reTrend svg, #reTrend .empty', home: '#lead li, #top li', elections: '#elRatio svg', global: '#gfFlow .gf-h' };
 const PATHS = { home: '/', elections: '/elections/' };
 
 // 브라우저 안에서 돈다
@@ -107,18 +127,28 @@ function inspect(scopeSel) {
   return { runs: runs.length, issues: issues.filter((x) => { const k = `${x.kind}|${x.a}|${x.b}`; if (seen.has(k)) return false; seen.add(k); return true; }) };
 }
 
-export async function audit(base, { view = 'realty', out = null, shots = false, cases = CASES } = {}) {
+export async function audit(base, { view = 'realty', out = null, shots = false, cases = CASES, fuzz = false, motion = false } = {}) {
   const browser = await chromium.launch();
   const report = {};
   try {
     for (const c of cases) {
-      const ctx = await browser.newContext({ viewport: { width: c.width, height: c.dsf ? 450 : 900 }, deviceScaleFactor: c.dsf || 1, colorScheme: c.scheme, reducedMotion: 'reduce', isMobile: c.width < 760, hasTouch: c.width < 760 });
+      const ctx = await browser.newContext({ viewport: { width: c.width, height: c.dsf ? 450 : 900 }, deviceScaleFactor: c.dsf || 1, colorScheme: c.scheme, reducedMotion: motion ? 'no-preference' : 'reduce', isMobile: c.width < 760, hasTouch: c.width < 760 });
       const page = await ctx.newPage();
+      if (fuzz && view === 'realty') await page.route('**/api/realty*', async (route) => { const r = await route.fetch(); route.fulfill({ response: r, body: JSON.stringify(fuzzRealty(await r.json())) }); });
       await page.goto(`${base}${PATHS[view] || `/?v=${view}`}`, { waitUntil: 'load' });
       await page.waitForSelector(READY[view], { timeout: 30000 }).catch(() => {});
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(1200);
-      const r = await page.evaluate(inspect, SCOPES[view]);
+      let r = await page.evaluate(inspect, SCOPES[view]);
+      if (motion && view === 'realty') {
+        // 움직임이 켜진 사용자: 다른 탭에서 부동산으로 넘어오는 동안(전환·등장·숫자 세기) 여러 순간을 잰다
+        for (const t of [80, 240, 480, 900]) {
+          await page.evaluate(() => document.querySelector('[data-view="home"]')?.click()); await page.waitForTimeout(700);
+          await page.evaluate(() => document.querySelector('[data-view="realty"]')?.click()); await page.waitForTimeout(t);
+          const m = await page.evaluate(inspect, SCOPES[view]);
+          for (const x of m.issues) r.issues.push({ ...x, b: `${x.b} @${t}ms` });
+        }
+      }
       report[c.key] = { ...r, count: r.issues.length };
       if (out && shots) await page.screenshot({ path: `${out}/${view}-${c.key}.png`, fullPage: true });
       await ctx.close();
@@ -133,7 +163,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const arg = (k) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
   const view = arg('--view') || 'realty', out = arg('--out');
   if (out) await mkdir(out, { recursive: true });
-  const report = await audit(base, { view, out, shots: process.argv.includes('--shots') });
+  const report = await audit(base, { view, out, shots: process.argv.includes('--shots'), cases: process.argv.includes('--wide') ? WIDE : CASES, fuzz: process.argv.includes('--fuzz'), motion: process.argv.includes('--motion') });
   if (out) await writeFile(`${out}/${view}-report.json`, JSON.stringify(report, null, 1));
   let total = 0;
   for (const [k, v] of Object.entries(report)) {
